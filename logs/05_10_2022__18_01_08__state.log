@@ -1,0 +1,169 @@
+2022-10-05 18:01:10,318 INFO     Camera Started
+2022-10-05 18:01:13,464 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 396,
+                                 'y': 317}}
+2022-10-05 18:01:13,465 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 396,
+                                 'y': 317}}
+2022-10-05 18:01:13,586 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 400,
+                                 'y': 316}}
+2022-10-05 18:01:13,593 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 400,
+                                 'y': 316}}
+2022-10-05 18:01:13,669 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 399,
+                                 'y': 317}}
+2022-10-05 18:01:13,673 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 399,
+                                 'y': 317}}
+2022-10-05 18:01:13,740 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 403,
+                                 'y': 317}}
+2022-10-05 18:01:13,743 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 403,
+                                 'y': 317}}
+2022-10-05 18:01:13,824 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 402,
+                                 'y': 317}}
+2022-10-05 18:01:13,825 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 402,
+                                 'y': 317}}
+2022-10-05 18:01:13,886 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 403,
+                                 'y': 317}}
+2022-10-05 18:01:13,888 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 403,
+                                 'y': 317}}
+2022-10-05 18:01:13,953 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 403,
+                                 'y': 317}}
+2022-10-05 18:01:13,955 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 403,
+                                 'y': 317}}
+2022-10-05 18:01:14,014 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 405,
+                                 'y': 317}}
+2022-10-05 18:01:14,015 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 405,
+                                 'y': 317}}
+2022-10-05 18:01:14,081 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 407,
+                                 'y': 317}}
+2022-10-05 18:01:14,089 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 407,
+                                 'y': 317}}
+2022-10-05 18:01:14,152 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 406,
+                                 'y': 318}}
+2022-10-05 18:01:14,153 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 406,
+                                 'y': 318}}
+2022-10-05 18:01:14,223 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 405,
+                                 'y': 319}}
+2022-10-05 18:01:14,224 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 405,
+                                 'y': 319}}
+2022-10-05 18:01:14,282 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 409,
+                                 'y': 319}}
+2022-10-05 18:01:14,286 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 409,
+                                 'y': 319}}
+2022-10-05 18:01:14,348 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 320}}
+2022-10-05 18:01:14,349 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 320}}
+2022-10-05 18:01:14,415 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 319}}
+2022-10-05 18:01:14,416 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 319}}
+2022-10-05 18:01:14,474 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 319}}
+2022-10-05 18:01:14,475 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 319}}
+2022-10-05 18:01:14,535 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 413,
+                                 'y': 320}}
+2022-10-05 18:01:14,536 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 413,
+                                 'y': 320}}
+2022-10-05 18:01:14,602 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 415,
+                                 'y': 319}}
+2022-10-05 18:01:14,602 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 415,
+                                 'y': 319}}
+2022-10-05 18:01:14,673 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 320}}
+2022-10-05 18:01:14,674 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 320}}
+2022-10-05 18:01:14,740 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 319}}
+2022-10-05 18:01:14,741 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 319}}
+2022-10-05 18:01:14,809 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 319}}
+2022-10-05 18:01:14,810 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 319}}
+2022-10-05 18:01:14,865 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 319}}
+2022-10-05 18:01:14,866 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 319}}
+2022-10-05 18:01:14,920 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 320}}
+2022-10-05 18:01:14,921 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 320}}
+2022-10-05 18:01:14,980 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 320}}
+2022-10-05 18:01:14,980 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 320}}
+2022-10-05 18:01:15,037 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 413,
+                                 'y': 320}}
+2022-10-05 18:01:15,038 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 413,
+                                 'y': 320}}
+2022-10-05 18:01:15,099 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 412,
+                                 'y': 318}}
+2022-10-05 18:01:15,099 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 412,
+                                 'y': 318}}
+2022-10-05 18:01:15,158 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 412,
+                                 'y': 318}}
+2022-10-05 18:01:15,158 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 412,
+                                 'y': 318}}
+2022-10-05 18:01:15,220 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 412,
+                                 'y': 317}}
+2022-10-05 18:01:15,221 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 412,
+                                 'y': 317}}
+2022-10-05 18:01:15,283 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 411,
+                                 'y': 318}}
+2022-10-05 18:01:15,283 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 411,
+                                 'y': 318}}
+2022-10-05 18:01:15,344 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 318}}
+2022-10-05 18:01:15,344 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 318}}
+2022-10-05 18:01:15,394 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 318}}
+2022-10-05 18:01:15,395 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 318}}
+2022-10-05 18:01:15,460 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 318}}
+2022-10-05 18:01:15,461 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 318}}
+2022-10-05 18:01:15,517 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 317}}
+2022-10-05 18:01:15,517 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 317}}
+2022-10-05 18:01:15,583 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 317}}
+2022-10-05 18:01:15,584 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 317}}
+2022-10-05 18:01:15,651 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 318}}
+2022-10-05 18:01:15,652 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 410,
+                                 'y': 318}}
+2022-10-05 18:01:15,710 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 411,
+                                 'y': 317}}
+2022-10-05 18:01:15,711 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 411,
+                                 'y': 317}}
+2022-10-05 18:01:15,773 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 317}}
+2022-10-05 18:01:15,774 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 414,
+                                 'y': 317}}
+2022-10-05 18:01:15,835 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 415,
+                                 'y': 316}}
+2022-10-05 18:01:15,836 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 415,
+                                 'y': 316}}
+2022-10-05 18:01:15,894 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 416,
+                                 'y': 317}}
+2022-10-05 18:01:15,894 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 416,
+                                 'y': 317}}
+2022-10-05 18:01:15,956 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 413,
+                                 'y': 322}}
+2022-10-05 18:01:15,956 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 413,
+                                 'y': 322}}
+2022-10-05 18:01:16,017 INFO     Eyes Open. State: {'open': 1, 'lr': 0, 'left_eye_center': {'x': 412,
+                                 'y': 322}}
+2022-10-05 18:01:16,017 INFO     Eyes Closed. State: {'open': 0, 'lr': 0, 'left_eye_center': {'x': 412,
+                                 'y': 322}}
+2022-10-05 18:01:16,078 INFO     Eyes Closed. State: {'open': 0, 'lr': 0, 'left_eye_center': {'x': 412,
+                                 'y': 323}}
+2022-10-05 18:01:16,078 INFO     Eyes Closed. State: {'open': 0, 'lr': 0, 'left_eye_center': {'x': 412,
+                                 'y': 323}}
+2022-10-05 18:01:16,138 INFO     Eyes Closed. State: {'open': 0, 'lr': 0, 'left_eye_center': {'x': 413,
+                                 'y': 323}}
+2022-10-05 18:01:16,139 INFO     Eyes Closed. State: {'open': 0, 'lr': 0, 'left_eye_center': {'x': 413,
+                                 'y': 323}}
