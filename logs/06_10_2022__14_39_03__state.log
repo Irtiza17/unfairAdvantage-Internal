@@ -1,0 +1,8 @@
+2022-10-06 14:39:05,719 INFO     Camera Started
+2022-10-06 14:39:08,871 INFO     Eyes Open. State: {'open': 1}
+2022-10-06 14:39:10,157 INFO     Eyes Closed. State: {'open': 0}
+2022-10-06 14:39:10,247 INFO     Eyes Open. State: {'open': 1}
+2022-10-06 14:39:10,757 INFO     Eyes Closed. State: {'open': 0}
+2022-10-06 14:39:10,861 INFO     Eyes Open. State: {'open': 1}
+2022-10-06 14:39:11,729 INFO     Eyes Closed. State: {'open': 0}
+2022-10-06 14:39:12,130 INFO     Eyes Open. State: {'open': 1}

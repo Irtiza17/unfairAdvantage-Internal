@@ -3,15 +3,13 @@ import cv2
 import mediapipe as mp
 
 
-from faceEyesTracking import faceDetect
-from faceEyesTracking import eyeDetection
-from focusTracking import headTurned
-from focusTracking import eyeIrisMismatch
-from focusTracking import eyesOpenDetection
+from faceEyesTracking import *
+from focusTracking import *
 from globalFunctions import *
 
 def main():
     cam = cv2.VideoCapture(0) # Open webcam live feed
+    # stateMaintain(None)
     stateMaintain(None)
     cam.set(3,1080)
     cam.set(4,960)

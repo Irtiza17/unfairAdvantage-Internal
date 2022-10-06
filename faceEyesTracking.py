@@ -42,7 +42,7 @@ def eyeDetection(frame,landmarks):
         z = landmark.z
     left_eye_center = {'x':int(mean(lix)),'y':int(mean(liy))}
     # right_eye_center = {'xright':int(mean(rix)),'yright':int(mean(riy))}
-    state['left_eye_center'] = left_eye_center
-    stateMaintain(state)
+    # state['left_eye_center'] = left_eye_center
+    # stateMaintain(state)
     cv2.circle(frame,(int(mean(rix)),int(mean(riy))),2,(0,0,255),2)
     return left_eye_center

@@ -10,11 +10,13 @@ def eyesOpenDetection(frame,landmarks):
     right = [landmarks[373],landmarks[386]]
 
     if ((left[0].y - left[1].y) < 0.015) and ((right[0].y - right[1].y) < 0.015):
+        # state =0
         state['open']=0
-        cv2.putText(frame,'EYES CLOSED',(200,100), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 200), 2)
         stateMaintain(state)
+        cv2.putText(frame,'EYES CLOSED',(200,100), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 200), 2)
     else:
         state['open']=1      
+        # state=1      
         stateMaintain(state)
 
 def headTurned(frame,eyes_center):
