@@ -22,6 +22,7 @@ class KeyPointClassifier(object):
         self,
         landmark_list,
     ):
+        # print('this is the length of landmarks: ',len(landmark_list))
         input_details_tensor_index = self.input_details[0]['index']
         self.interpreter.set_tensor(
             input_details_tensor_index,

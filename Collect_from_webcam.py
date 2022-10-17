@@ -4,6 +4,9 @@ import itertools
 import cv2 as cv
 import mediapipe as mp
 
+ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 133, 473, 474, 475, 476, 477, 466, 388, 387, 386, 385, 384, 398, 263, 249, 390, 373, 374, 380, 381, 382, 362, 468,
+469, 470, 471, 472]
+
 def select_mode(key, mode):
     number = -1
     if 48 <= key <= 57:  # 0 ~ 9
@@ -15,13 +18,15 @@ def select_mode(key, mode):
     return number, mode
 
 
-def calc_landmark_list(image, landmarks):
+def calc_landmark_list(image, landmarks, ROI):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
 
     # Keypoint
-    for _, landmark in enumerate(landmarks.landmark):
+    # for _, landmark in enumerate(landmarks.landmark):
+    for i in ROI:
+        landmark = landmarks.landmark[i]
         landmark_x = min(int(landmark.x * image_width), image_width - 1)
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
 
@@ -68,7 +73,7 @@ def logging_csv(number, mode, landmark_list):
     return
 
 
-cap_device = 0
+cap_device = 1
 cap_width = 1920
 cap_height = 1080
 
@@ -114,7 +119,7 @@ while True:
         for face_landmarks in results.multi_face_landmarks:
 
             # Landmark calculation
-            landmark_list = calc_landmark_list(debug_image, face_landmarks)
+            landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
 
             # Conversion to relative coordinates / normalized coordinates
             pre_processed_landmark_list = pre_process_landmark(

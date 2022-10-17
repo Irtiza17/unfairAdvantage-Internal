@@ -7,14 +7,19 @@ import numpy as np
 import mediapipe as mp
 from model import KeyPointClassifier
 
+ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 133, 473, 474, 475, 476, 477, 466, 388, 387, 386, 385, 384, 398, 263, 249, 390, 373, 374, 380, 381, 382, 362, 468,
+469, 470, 471, 472]
 
-def calc_landmark_list(image, landmarks):
+
+def calc_landmark_list(image, landmarks, ROI):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
 
     # Keypoint
-    for _, landmark in enumerate(landmarks.landmark):
+    # for _, landmark in enumerate(landmarks.landmark):
+    for i in ROI:
+        landmark = landmarks.landmark[i]
         landmark_x = min(int(landmark.x * image_width), image_width - 1)
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
 
@@ -86,7 +91,7 @@ def draw_info_text(image, brect, facial_text):
 
     return image
 
-cap_device = 0
+cap_device = 1
 cap_width = 1920
 cap_height = 1080
 
@@ -115,6 +120,9 @@ with open('model/keypoint_classifier/keypoint_classifier_label.csv',
     keypoint_classifier_labels = [
         row[0] for row in keypoint_classifier_labels
     ]
+
+for idx, i in enumerate(keypoint_classifier_labels):
+    print(idx,i)
 
 mode = 0
 
@@ -145,7 +153,7 @@ while True:
             brect = calc_bounding_rect(debug_image, face_landmarks)
 
             # Landmark calculation
-            landmark_list = calc_landmark_list(debug_image, face_landmarks)
+            landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
 
             # Conversion to relative coordinates / normalized coordinates
             pre_processed_landmark_list = pre_process_landmark(
@@ -153,6 +161,8 @@ while True:
 
             #emotion classification
             facial_emotion_id = keypoint_classifier(pre_processed_landmark_list)
+            if cv.waitKey(5) & 0xFF == ord('s'):
+                print(facial_emotion_id)
             # Drawing part
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
             debug_image = draw_info_text(
