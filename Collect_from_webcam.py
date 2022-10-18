@@ -66,14 +66,14 @@ def logging_csv(number, mode, landmark_list):
     if mode == 0:
         pass
     if mode == 1 and (0 <= number <= 9):
-        csv_path = 'model/keypoint_classifier/keypoint.csv'
+        csv_path = 'model/keypoint_classifier/keypoint2.csv'
         with open(csv_path, 'a', newline="") as f:
             writer = csv.writer(f)
             writer.writerow([number, *landmark_list])
     return
 
 
-cap_device = 1
+cap_device = 0
 cap_width = 1920
 cap_height = 1080
 
@@ -131,7 +131,7 @@ while True:
         cv.putText(debug_image, "MODE:" + 'Record keypoints mode', (10, 90),
                 cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1,
                 cv.LINE_AA)
-    cv.imshow('Facial Emotion Recognition', debug_image)
+    cv.imshow('Focus Recognition', debug_image)
 
 cap.release()
 cv.destroyAllWindows()

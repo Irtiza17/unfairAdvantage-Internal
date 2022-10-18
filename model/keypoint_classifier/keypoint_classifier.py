@@ -7,7 +7,7 @@ import tensorflow as tf
 class KeyPointClassifier(object):
     def __init__(
         self,
-        model_path='model/keypoint_classifier/keypoint_classifier.tflite',
+        model_path,
         num_threads=1,
     ):
         self.interpreter = tf.lite.Interpreter(model_path=model_path,
@@ -38,4 +38,3 @@ class KeyPointClassifier(object):
             return result_index
         else:
             return self.last_index
-    

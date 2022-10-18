@@ -6,6 +6,8 @@ import cv2 as cv
 import numpy as np
 import mediapipe as mp
 from model import KeyPointClassifier
+model_path ='model/keypoint_classifier/keypoint_classifier.tflite'
+model_path2 ='model/keypoint_classifier/keypoint_classifier2.tflite'
 
 ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 133, 473, 474, 475, 476, 477, 466, 388, 387, 386, 385, 384, 398, 263, 249, 390, 373, 374, 380, 381, 382, 362, 468,
 469, 470, 471, 472]
@@ -91,7 +93,7 @@ def draw_info_text(image, brect, facial_text):
 
     return image
 
-cap_device = 1
+cap_device = 0
 cap_width = 1920
 cap_height = 1080
 
@@ -110,7 +112,8 @@ face_mesh = mp_face_mesh.FaceMesh(
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) 
 
-keypoint_classifier = KeyPointClassifier()
+keypoint_classifier = KeyPointClassifier(model_path)
+keypoint_classifier2 = KeyPointClassifier(model_path2)
 
 
 # Read labels
@@ -159,10 +162,16 @@ while True:
             pre_processed_landmark_list = pre_process_landmark(
                 landmark_list)
 
-            #emotion classification
+            #focus classification
             facial_emotion_id = keypoint_classifier(pre_processed_landmark_list)
             if cv.waitKey(5) & 0xFF == ord('s'):
                 print(facial_emotion_id)
+            
+            #emotion classification
+            facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list)
+            if cv.waitKey(5) & 0xFF == ord('s'):
+                print(facial_emotion_id)
+            
             # Drawing part
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
             debug_image = draw_info_text(
