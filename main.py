@@ -13,7 +13,7 @@ ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 1
 469, 470, 471, 472]
 
 
-def calc_landmark_list(image, landmarks, ROI):
+def calc_landmark_list(image, landmarks,ROI):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
@@ -22,6 +22,22 @@ def calc_landmark_list(image, landmarks, ROI):
     # for _, landmark in enumerate(landmarks.landmark):
     for i in ROI:
         landmark = landmarks.landmark[i]
+        landmark_x = min(int(landmark.x * image_width), image_width - 1)
+        landmark_y = min(int(landmark.y * image_height), image_height - 1)
+
+        landmark_point.append([landmark_x, landmark_y])
+
+    return landmark_point
+
+def calc_landmark_list1(image, landmarks):
+    image_width, image_height = image.shape[1], image.shape[0]
+
+    landmark_point = []
+
+    # Keypoint
+    for _, landmark in enumerate(landmarks.landmark):
+    # for i in ROI:
+        # landmark = landmarks.landmark[i]
         landmark_x = min(int(landmark.x * image_width), image_width - 1)
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
 
@@ -87,6 +103,18 @@ def draw_info_text(image, brect, facial_text):
                  (0, 0, 0), -1)
 
     if facial_text != "":
+        info_text = 'Focus :' + facial_text
+    cv.putText(image, info_text, (brect[0] + 5, brect[1] - 4),
+               cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
+
+    return image
+
+
+def draw_info_text1(image, brect, facial_text):
+    cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] - 22),
+                 (0, 0, 0), -1)
+
+    if facial_text != "":
         info_text = 'Emotion :' + facial_text
     cv.putText(image, info_text, (brect[0] + 5, brect[1] - 4),
                cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
@@ -123,9 +151,18 @@ with open('model/keypoint_classifier/keypoint_classifier_label.csv',
     keypoint_classifier_labels = [
         row[0] for row in keypoint_classifier_labels
     ]
-
 for idx, i in enumerate(keypoint_classifier_labels):
     print(idx,i)
+# Read labels
+with open('model/keypoint_classifier/keypoint_classifier_label2.csv',
+            encoding='utf-8-sig') as f:
+    keypoint_classifier_labels2 = csv.reader(f)
+    keypoint_classifier_labels2 = [
+        row[0] for row in keypoint_classifier_labels2
+    ]
+
+for idx2, i2 in enumerate(keypoint_classifier_labels2):
+    print(idx2,i2)
 
 mode = 0
 
@@ -156,20 +193,23 @@ while True:
             brect = calc_bounding_rect(debug_image, face_landmarks)
 
             # Landmark calculation
-            landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
+            landmark_list1 = calc_landmark_list(debug_image, face_landmarks,ROI)
+            landmark_list2 = calc_landmark_list1(debug_image, face_landmarks)
 
             # Conversion to relative coordinates / normalized coordinates
-            pre_processed_landmark_list = pre_process_landmark(
-                landmark_list)
+            pre_processed_landmark_list1 = pre_process_landmark(
+                landmark_list1)
+            pre_processed_landmark_list2 = pre_process_landmark(
+                landmark_list2)
 
             #focus classification
-            facial_emotion_id = keypoint_classifier(pre_processed_landmark_list)
+            facial_focus_id = keypoint_classifier(pre_processed_landmark_list1)
             if cv.waitKey(5) & 0xFF == ord('s'):
-                print(facial_emotion_id)
+                print(facial_focus_id)
             
             #emotion classification
-            facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list)
-            if cv.waitKey(5) & 0xFF == ord('s'):
+            facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list2)
+            if cv.waitKey(5) & 0xFF == ord('t'):
                 print(facial_emotion_id)
             
             # Drawing part
@@ -177,10 +217,14 @@ while True:
             debug_image = draw_info_text(
                     debug_image,
                     brect,
+                    keypoint_classifier_labels[facial_focus_id])
+            debug_image = draw_info_text1(
+                    debug_image,
+                    brect,
                     keypoint_classifier_labels[facial_emotion_id])
 
     # Screen reflection
-    cv.imshow('Facial Emotion Recognition', debug_image)
+    cv.imshow('Facial Emotion and focus Recognition', debug_image)
 
 cap.release()
 cv.destroyAllWindows()

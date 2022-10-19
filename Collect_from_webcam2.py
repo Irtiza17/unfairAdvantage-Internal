@@ -21,15 +21,15 @@ def select_mode(key, mode):
     return number, mode
 
 
-def calc_landmark_list(image, landmarks, ROI):
+def calc_landmark_list(image, landmarks):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
 
     # Keypoint
-    # for _, landmark in enumerate(landmarks.landmark):
-    for i in ROI:
-        landmark = landmarks.landmark[i]
+    for _, landmark in enumerate(landmarks.landmark):
+    # for i in ROI:
+        # landmark = landmarks.landmark[i]
         landmark_x = min(int(landmark.x * image_width), image_width - 1)
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
 
@@ -126,7 +126,7 @@ while True:
         for face_landmarks in results.multi_face_landmarks:
 
             # Landmark calculation
-            landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
+            landmark_list = calc_landmark_list(debug_image, face_landmarks)
 
             # Conversion to relative coordinates / normalized coordinates
             pre_processed_landmark_list = pre_process_landmark(
