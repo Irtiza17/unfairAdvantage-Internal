@@ -13,35 +13,25 @@ ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 1
 469, 470, 471, 472]
 
 
-def calc_landmark_list(image, landmarks,ROI):
+def calc_landmark_list(image, landmarks,ROI=False):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
 
     # Keypoint
-    # for _, landmark in enumerate(landmarks.landmark):
-    for i in ROI:
-        landmark = landmarks.landmark[i]
-        landmark_x = min(int(landmark.x * image_width), image_width - 1)
-        landmark_y = min(int(landmark.y * image_height), image_height - 1)
-
-        landmark_point.append([landmark_x, landmark_y])
-
-    return landmark_point
-
-def calc_landmark_list1(image, landmarks):
-    image_width, image_height = image.shape[1], image.shape[0]
-
-    landmark_point = []
-
-    # Keypoint
-    for _, landmark in enumerate(landmarks.landmark):
-    # for i in ROI:
-        # landmark = landmarks.landmark[i]
-        landmark_x = min(int(landmark.x * image_width), image_width - 1)
-        landmark_y = min(int(landmark.y * image_height), image_height - 1)
-
-        landmark_point.append([landmark_x, landmark_y])
+    if ROI == False:
+        for _, landmark in enumerate(landmarks.landmark):
+        # for i in ROI:
+            # landmark = landmarks.landmark[i]
+            landmark_x = min(int(landmark.x * image_width), image_width - 1)
+            landmark_y = min(int(landmark.y * image_height), image_height - 1)
+            landmark_point.append([landmark_x, landmark_y])
+    else:
+        for i in ROI:
+            landmark = landmarks.landmark[i]
+            landmark_x = min(int(landmark.x * image_width), image_width - 1)
+            landmark_y = min(int(landmark.y * image_height), image_height - 1)
+            landmark_point.append([landmark_x, landmark_y])
 
     return landmark_point
 
@@ -81,6 +71,7 @@ def draw_bounding_rect(use_brect, image, brect):
 
     return image
 
+
 def calc_bounding_rect(image, landmarks):
     image_width, image_height = image.shape[1], image.shape[0]
 
@@ -91,33 +82,41 @@ def calc_bounding_rect(image, landmarks):
         landmark_y = min(int(landmark.y * image_height), image_height - 1)
 
         landmark_point = [np.array((landmark_x, landmark_y))]
+        # print("landmark Point is " , landmark_point)
 
         landmark_array = np.append(landmark_array, landmark_point, axis=0)
+        # print("landmark array is " , landmark_array)
 
     x, y, w, h = cv.boundingRect(landmark_array)
 
     return [x, y, x + w, y + h]
 
-def draw_info_text(image, brect, facial_text):
+
+def draw_info_text(image, brect, facial_text1,facial_text2):
     cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] - 22),
                  (0, 0, 0), -1)
 
-    if facial_text != "":
-        info_text = 'Focus :' + facial_text
+    if facial_text1 != "":
+        info_text = 'Gaze :' + facial_text1
     cv.putText(image, info_text, (brect[0] + 5, brect[1] - 4),
                cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
+    
+    cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] + 22),
+                 (0, 0, 0), -1)
+    if facial_text2 != "":
+        info_text2 = 'Emotion :' + facial_text2
+    cv.putText(image, info_text2, (brect[0] + 5, brect[1] +20),
+               cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
+
+
+    # cv.putText(image, 'SCORING: [Focus(5) Emotion(4)]', (brect[0] + 5, brect[1] + 40),
+    #            cv.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1, cv.LINE_AA)
+
 
     return image
 
 
-def draw_info_text1(image, brect, facial_text):
-    cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] - 22),
-                 (0, 0, 0), -1)
 
-    if facial_text != "":
-        info_text = 'Emotion :' + facial_text
-    cv.putText(image, info_text, (brect[0] + 5, brect[1] - 4),
-               cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
 
     return image
 
@@ -193,14 +192,15 @@ while True:
             brect = calc_bounding_rect(debug_image, face_landmarks)
 
             # Landmark calculation
-            landmark_list1 = calc_landmark_list(debug_image, face_landmarks,ROI)
-            landmark_list2 = calc_landmark_list1(debug_image, face_landmarks)
+            # landmark_list1 = calc_landmark_list(debug_image, face_landmarks,ROI)
+            focus_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
+            emotion_landmark_list = calc_landmark_list(debug_image, face_landmarks)
 
             # Conversion to relative coordinates / normalized coordinates
             pre_processed_landmark_list1 = pre_process_landmark(
-                landmark_list1)
+                focus_landmark_list)
             pre_processed_landmark_list2 = pre_process_landmark(
-                landmark_list2)
+                emotion_landmark_list)
 
             #focus classification
             facial_focus_id = keypoint_classifier(pre_processed_landmark_list1)
@@ -217,11 +217,12 @@ while True:
             debug_image = draw_info_text(
                     debug_image,
                     brect,
-                    keypoint_classifier_labels[facial_focus_id])
-            debug_image = draw_info_text1(
-                    debug_image,
-                    brect,
-                    keypoint_classifier_labels[facial_emotion_id])
+                    keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id])
+
+            # debug_image = draw_info_text1(
+            #         debug_image,
+            #         brect,
+            #         keypoint_classifier_labels2[facial_emotion_id])
 
     # Screen reflection
     cv.imshow('Facial Emotion and focus Recognition', debug_image)
