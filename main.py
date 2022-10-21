@@ -1,34 +1,54 @@
 import csv
 import copy
 import itertools
+import depthai
 
 import cv2 as cv
 import numpy as np
 import mediapipe as mp
 from model import KeyPointClassifier
+
+
+mp_drawing = mp.solutions.drawing_utils
+mp_drawing_styles = mp.solutions.drawing_styles
+mp_holistic = mp.solutions.holistic
+
+poseModel = True
+focusModel = True
+emotionModel = True
+
+camera = "cam"
+
 model_path ='model/keypoint_classifier/keypoint_classifier.tflite'
 model_path2 ='model/keypoint_classifier/keypoint_classifier2.tflite'
+model_path3 ='model/keypoint_classifier/keypoint_classifier3.tflite'
+ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 133, 473, 474, 475, 476, 
+        477, 466, 388, 387, 386, 385, 384, 398, 263, 249, 390, 373, 374, 380, 381, 382, 362, 468,469, 470, 
+        471, 472]
 
-ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 133, 473, 474, 475, 476, 477, 466, 388, 387, 386, 385, 384, 398, 263, 249, 390, 373, 374, 380, 381, 382, 362, 468,
-469, 470, 471, 472]
 
-
-def calc_landmark_list(image, landmarks,ROI=False):
+def calc_landmark_list(image, landmarks,ROI=False,Pose=False):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
-
     # Keypoint
-    if ROI == False:
+    if ROI == False and Pose == False:
         for _, landmark in enumerate(landmarks.landmark):
         # for i in ROI:
             # landmark = landmarks.landmark[i]
             landmark_x = min(int(landmark.x * image_width), image_width - 1)
             landmark_y = min(int(landmark.y * image_height), image_height - 1)
             landmark_point.append([landmark_x, landmark_y])
-    else:
+
+    elif ROI != False:
         for i in ROI:
             landmark = landmarks.landmark[i]
+            landmark_x = min(int(landmark.x * image_width), image_width - 1)
+            landmark_y = min(int(landmark.y * image_height), image_height - 1)
+            landmark_point.append([landmark_x, landmark_y])
+
+    elif Pose != False:
+        for _, landmark in enumerate(landmarks.pose_landmarks.landmark):
             landmark_x = min(int(landmark.x * image_width), image_width - 1)
             landmark_y = min(int(landmark.y * image_height), image_height - 1)
             landmark_point.append([landmark_x, landmark_y])
@@ -92,7 +112,7 @@ def calc_bounding_rect(image, landmarks):
     return [x, y, x + w, y + h]
 
 
-def draw_info_text(image, brect, facial_text1,facial_text2):
+def draw_info_text(image, brect, facial_text1,facial_text2='',facial_text3=''):
     cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] - 22),
                  (0, 0, 0), -1)
 
@@ -105,9 +125,15 @@ def draw_info_text(image, brect, facial_text1,facial_text2):
                  (0, 0, 0), -1)
     if facial_text2 != "":
         info_text2 = 'Emotion :' + facial_text2
-    cv.putText(image, info_text2, (brect[0] + 5, brect[1] +20),
-               cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
-
+        cv.putText(image, info_text2, (brect[0] + 5, brect[1] +20),
+                cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
+                
+    cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] + 22),
+                 (0, 0, 0), -1)
+    if facial_text3 != "":
+        info_text3 = 'Pose :' + facial_text3
+        cv.putText(image, info_text3, (brect[0] + 5, brect[1] + 40),
+                cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
 
     # cv.putText(image, 'SCORING: [Focus(5) Emotion(4)]', (brect[0] + 5, brect[1] + 40),
     #            cv.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1, cv.LINE_AA)
@@ -116,116 +142,181 @@ def draw_info_text(image, brect, facial_text1,facial_text2):
     return image
 
 
+def oakD():
+    pipeline = depthai.Pipeline()
+    cam_rgb = pipeline.createColorCamera()
+    cam_rgb.setPreviewSize(300, 300) 
+    cam_rgb.setInterleaved(False)
+    xout_rgb = pipeline.createXLinkOut()
+    xout_rgb.setStreamName("rgb")
+    cam_rgb.preview.link(xout_rgb.input)
+    return pipeline
 
 
-    return image
 
-cap_device = 0
-cap_width = 1920
-cap_height = 1080
-
-use_brect = True
-
-# Camera preparation
-cap = cv.VideoCapture(cap_device)
-cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
-cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
-
-# Model load
-mp_face_mesh = mp.solutions.face_mesh
-face_mesh = mp_face_mesh.FaceMesh(
-        max_num_faces=1,
-        refine_landmarks=True,
-        min_detection_confidence=0.5,
-        min_tracking_confidence=0.5) 
-
-keypoint_classifier = KeyPointClassifier(model_path)
-keypoint_classifier2 = KeyPointClassifier(model_path2)
+with mp_holistic.Holistic(
+    min_detection_confidence=0.5,
+    min_tracking_confidence=0.5) as holistic:
 
 
-# Read labels
-with open('model/keypoint_classifier/keypoint_classifier_label.csv',
-            encoding='utf-8-sig') as f:
-    keypoint_classifier_labels = csv.reader(f)
-    keypoint_classifier_labels = [
-        row[0] for row in keypoint_classifier_labels
-    ]
-for idx, i in enumerate(keypoint_classifier_labels):
-    print(idx,i)
-# Read labels
-with open('model/keypoint_classifier/keypoint_classifier_label2.csv',
-            encoding='utf-8-sig') as f:
-    keypoint_classifier_labels2 = csv.reader(f)
-    keypoint_classifier_labels2 = [
-        row[0] for row in keypoint_classifier_labels2
-    ]
+    
+    
+    mode = 0
 
-for idx2, i2 in enumerate(keypoint_classifier_labels2):
-    print(idx2,i2)
+    # Model load
+    mp_face_mesh = mp.solutions.face_mesh
+    face_mesh = mp_face_mesh.FaceMesh(
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5) 
 
-mode = 0
+    keypoint_classifier = KeyPointClassifier(model_path)
+    keypoint_classifier2 = KeyPointClassifier(model_path2)
+    keypoint_classifier3 = KeyPointClassifier(model_path3)
 
-while True:
+    with open('model/keypoint_classifier/keypoint_classifier_label.csv',
+                encoding='utf-8-sig') as f:
+        keypoint_classifier_labels = csv.reader(f)
+        keypoint_classifier_labels = [
+            row[0] for row in keypoint_classifier_labels
+        ]
+    for idx, i in enumerate(keypoint_classifier_labels):
+        print(idx,i)
+    # Read labels
+    with open('model/keypoint_classifier/keypoint_classifier_label2.csv',
+                encoding='utf-8-sig') as f:
+        keypoint_classifier_labels2 = csv.reader(f)
+        keypoint_classifier_labels2 = [
+            row[0] for row in keypoint_classifier_labels2
+        ]
 
-    # Process Key (ESC: end)
-    key = cv.waitKey(10)
-    if key == 27:  # ESC
-        break
+    for idx2, i2 in enumerate(keypoint_classifier_labels2):
+        print(idx2,i2)
 
-    # Camera capture
-    ret, image = cap.read()
-    if not ret:
-        break
-    image = cv.flip(image, 1)  # Mirror display
-    debug_image = copy.deepcopy(image)
+    with open('model/keypoint_classifier/keypoint_classifier_labelpose.csv',
+                encoding='utf-8-sig') as f:
+        keypoint_classifier_labelspose = csv.reader(f)
+        keypoint_classifier_labelspose = [
+            row[0] for row in keypoint_classifier_labelspose
+        ]
 
-    # Detection implementation
-    image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+    for idx3, i3 in enumerate(keypoint_classifier_labelspose):
+        print(idx3,i3)
+    
+    use_brect = True    
+    
+    if camera == 'cam':
+        cap_device = 0
+        cap_width = 1920
+        cap_height = 1080
+        # Camera preparation
+        cap = cv.VideoCapture(cap_device)
+        cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
+        cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
+    
+    elif camera == 'oakD':
+        pipeline= oakD()
+        with depthai.Device(pipeline) as device:
+            q_rgb = device.getOutputQueue(name="rgb", maxSize=4, blocking=False)
+            while True:
+            # Process Key (ESC: end)
+                key = cv.waitKey(10)
+                if key == 27:  # ESC
+                    break
+                # Camera capture
+                in_rgb = q_rgb.get()
+                image = in_rgb.getCvFrame()
 
-    image.flags.writeable = False
-    results = face_mesh.process(image)
-    image.flags.writeable = True
+    while True:
+        # Process Key (ESC: end)
+        key = cv.waitKey(10)
+        if key == 27:  # ESC
+            break
 
-    if results.multi_face_landmarks is not None:
-        for face_landmarks in results.multi_face_landmarks:
-            # Bounding box calculation
-            brect = calc_bounding_rect(debug_image, face_landmarks)
+        # Camera capture
+        ret, image = cap.read()
+        if not ret:
+            break
+        image = cv.flip(image, 1)  # Mirror display
+        debug_image = copy.deepcopy(image)
 
-            # Landmark calculation
-            # landmark_list1 = calc_landmark_list(debug_image, face_landmarks,ROI)
-            focus_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
-            emotion_landmark_list = calc_landmark_list(debug_image, face_landmarks)
+        # Detection implementation
+        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
 
-            # Conversion to relative coordinates / normalized coordinates
-            pre_processed_landmark_list1 = pre_process_landmark(
-                focus_landmark_list)
-            pre_processed_landmark_list2 = pre_process_landmark(
-                emotion_landmark_list)
+        if focusModel == True or emotionModel == True:
 
-            #focus classification
-            facial_focus_id = keypoint_classifier(pre_processed_landmark_list1)
-            if cv.waitKey(5) & 0xFF == ord('s'):
-                print(facial_focus_id)
+            image.flags.writeable = False
+            results = face_mesh.process(image)
+            image.flags.writeable = True
+
+            if results.multi_face_landmarks is not None:
+                for face_landmarks in results.multi_face_landmarks:
+                    # Bounding box calculation
+                    brect = calc_bounding_rect(debug_image, face_landmarks)
+
+                    # Landmark calculation
+                    # landmark_list1 = calc_landmark_list(debug_image, face_landmarks,ROI)
+                    if focusModel == True:
+                        focus_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
+                        # Conversion to relative coordinates / normalized coordinates
+                        pre_processed_landmark_list1 = pre_process_landmark(
+                        focus_landmark_list)
+                        facial_focus_id = keypoint_classifier(pre_processed_landmark_list1)
+
+
+
+                    if emotionModel == True:
+                        emotion_landmark_list = calc_landmark_list(debug_image, face_landmarks)
+                        pre_processed_landmark_list2 = pre_process_landmark(
+                        emotion_landmark_list)
+                        facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list2)
+                        if cv.waitKey(5) & 0xFF == ord('t'):
+                            print(facial_emotion_id)
+                
+                    
+                    
+                    # Drawing part
+                    # debug_image = draw_bounding_rect(use_brect, debug_image, brect)
+                    # debug_image = draw_info_text(
+                    #         debug_image,
+                    #         brect,
+                    #         keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id])
+
             
-            #emotion classification
-            facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list2)
-            if cv.waitKey(5) & 0xFF == ord('t'):
-                print(facial_emotion_id)
-            
-            # Drawing part
-            debug_image = draw_bounding_rect(use_brect, debug_image, brect)
-            debug_image = draw_info_text(
-                    debug_image,
-                    brect,
-                    keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id])
 
-            # debug_image = draw_info_text1(
-            #         debug_image,
-            #         brect,
-            #         keypoint_classifier_labels2[facial_emotion_id])
+        if poseModel == True:
+            image.flags.writeable = False
+            results = holistic.process(image)
+            image.flags.writeable = True
 
-    # Screen reflection
-    cv.imshow('Facial Emotion and focus Recognition', debug_image)
+            if results is not None:
+                # Bounding box calculation
+                # brect = calc_bounding_rect(debug_image, results)
 
-cap.release()
-cv.destroyAllWindows()
+                # Landmark calculation
+                pose_landmark_list = calc_landmark_list(debug_image, results,Pose=True)
+
+                # Conversion to relative coordinates / normalized coordinates
+                pre_processed_landmark_list3 = pre_process_landmark(
+                    pose_landmark_list)
+
+                #focus classification
+                pose_id = keypoint_classifier3(pre_processed_landmark_list3)
+                if cv.waitKey(5) & 0xFF == ord('s'):
+                    print(pose_id)
+                    
+        # Drawing part
+        debug_image = draw_bounding_rect(use_brect, debug_image, brect)
+
+        debug_image = draw_info_text(
+                            debug_image,
+                            brect,
+                            keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labelspose[pose_id]
+                            )
+
+        # Screen reflection
+        cv.imshow('Facial Emotion and focus Recognition', debug_image)
+
+    # cap.release()
+    cv.destroyAllWindows()
