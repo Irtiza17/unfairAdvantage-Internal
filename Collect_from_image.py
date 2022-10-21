@@ -62,9 +62,9 @@ def logging_csv(number, landmark_list):
     return
 
 
-root = "Your dataset dir"
+root = "G:/My Drive/JP/JP/Tasks/unfairAdvantage/modelTrainingApproach/emotionDetection/emotionDetection/images"
 IMAGE_FILES = []
-category = ['Anger','Happy','Neutral','Sad','Surprise']
+category = ['positive','negative']
 for path, subdirs, files in os.walk(root):
     for name in files:
         IMAGE_FILES.append(os.path.join(path, name))
@@ -78,11 +78,14 @@ face_mesh = mp_face_mesh.FaceMesh(
         min_detection_confidence=0.7,
         static_image_mode=True) 
 
-
+count = 0
 for idx, file in enumerate(IMAGE_FILES):
-    label_name = file.rsplit("/",1)[-1]
-    label_name = label_name.rsplit("\\",1)[0]
+    label_name = file.split("\\")[1]
+    file_name = file.split("\\")[2]
+    # label_name = label_name.rsplit("\\",1)[0]
     label = encode_label(label_name,category)
+    # count += 1
+    print(idx)
     image = cv2.imread(file)
     image = cv2.flip(image, 1)  # Mirror display
     debug_image = copy.deepcopy(image)
@@ -95,6 +98,8 @@ for idx, file in enumerate(IMAGE_FILES):
     if results.multi_face_landmarks is not None:
         for face_landmarks in results.multi_face_landmarks:
 
+            # print(count)
+
             # Landmark calculation
             landmark_list = calc_landmark_list(debug_image, face_landmarks)
 
@@ -103,3 +108,11 @@ for idx, file in enumerate(IMAGE_FILES):
                 landmark_list)
             # Write to the dataset file
             logging_csv(label, pre_processed_landmark_list)
+    else:
+        count += 1
+        # print(count,' ', file_name,' ',category[label],'This is not extracted')
+
+# print('Total images extracted are from:',label_name,' ',count)
+# print('Total images in actual are: ',idx+1)
+# print('='*20)
+print('Total images not extracted are: ',count)

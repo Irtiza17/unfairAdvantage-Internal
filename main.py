@@ -153,12 +153,15 @@ while True:
 
             #emotion classification
             facial_emotion_id = keypoint_classifier(pre_processed_landmark_list)
+            print(facial_emotion_id)
             # Drawing part
             debug_image = draw_bounding_rect(use_brect, debug_image, brect)
             debug_image = draw_info_text(
                     debug_image,
                     brect,
                     keypoint_classifier_labels[facial_emotion_id])
+            if cv.waitKey(5) & 0xFF == ord('s'):
+                print(keypoint_classifier_labels[facial_emotion_id])
 
     # Screen reflection
     cv.imshow('Facial Emotion Recognition', debug_image)

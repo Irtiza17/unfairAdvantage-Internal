@@ -5,13 +5,16 @@ import cv2 as cv
 import mediapipe as mp
 
 def select_mode(key, mode):
-    number = -1
+    global number
+    if number != -1:
+        number = prev_number
     if 48 <= key <= 57:  # 0 ~ 9
         number = key - 48
     if key == 110:  # n
         mode = 0
     if key == 107:  # k  # record mode
         mode = 1
+        number = -1
     return number, mode
 
 
@@ -68,7 +71,9 @@ def logging_csv(number, mode, landmark_list):
     return
 
 
-cap_device = 0
+number = -1
+
+cap_device = 1
 cap_width = 1920
 cap_height = 1080
 
@@ -94,7 +99,9 @@ while True:
     key = cv.waitKey(10)
     if key == 27:  # ESC
         break
+    prev_number = number
     number, mode = select_mode(key, mode)
+    print(number)
 
     # Camera capture 
     ret, image = cap.read()

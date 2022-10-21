@@ -1,0 +1,11 @@
+This is a self trained model on 
+
+happy = easily detecting
+anger = easily detecting but also giving angry for neutral
+neutral = not detecting
+sad = not detecting, only at some angled position
+
+3 persons involved == 6432 frames only
+
+=======================================================
+
