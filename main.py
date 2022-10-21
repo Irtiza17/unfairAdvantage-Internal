@@ -112,28 +112,38 @@ def calc_bounding_rect(image, landmarks):
     return [x, y, x + w, y + h]
 
 
-def draw_info_text(image, brect, facial_text1,facial_text2='',facial_text3=''):
-    cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] - 22),
+def draw_info_text(image, facial_text1,facial_text2='',facial_text3=''):
+    cv.rectangle(image, (0, 0), (250,160),
                  (0, 0, 0), -1)
 
     if facial_text1 != "":
-        info_text = 'Gaze :' + facial_text1
-    cv.putText(image, info_text, (brect[0] + 5, brect[1] - 4),
-               cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
+        info_text = 'Gaze: ' + facial_text1
+        cv.putText(image, info_text, (5,30),
+                cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 1, cv.LINE_AA)
     
-    cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] + 22),
-                 (0, 0, 0), -1)
     if facial_text2 != "":
-        info_text2 = 'Emotion :' + facial_text2
-        cv.putText(image, info_text2, (brect[0] + 5, brect[1] +20),
-                cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
+        info_text2 = 'Emotion: ' + facial_text2
+        cv.putText(image, info_text2, (5,70),
+                cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 1, cv.LINE_AA)
                 
-    cv.rectangle(image, (brect[0], brect[1]), (brect[2], brect[1] + 22),
-                 (0, 0, 0), -1)
     if facial_text3 != "":
-        info_text3 = 'Pose :' + facial_text3
-        cv.putText(image, info_text3, (brect[0] + 5, brect[1] + 40),
-                cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
+        info_text3 = 'Pose: ' + facial_text3
+        cv.putText(image, info_text3, (5,110),
+                cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 1, cv.LINE_AA)
+    val = []
+    if facial_text1 == 'Focused':
+        val.append(1)
+    if facial_text2 == 'Happy':
+        val.append(1)
+    if facial_text3 == 'Sitting':
+        val.append(1)
+    if poseModel == False:
+        pars = 2
+    else:
+        pars = 3
+
+    cv.putText(image, f"Score: {sum(val)}/{pars}", (5,150),
+                cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 1, cv.LINE_AA)
 
     # cv.putText(image, 'SCORING: [Focus(5) Emotion(4)]', (brect[0] + 5, brect[1] + 40),
     #            cv.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1, cv.LINE_AA)
@@ -308,12 +318,16 @@ with mp_holistic.Holistic(
                     
         # Drawing part
         debug_image = draw_bounding_rect(use_brect, debug_image, brect)
-
-        debug_image = draw_info_text(
-                            debug_image,
-                            brect,
-                            keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labelspose[pose_id]
-                            )
+        if poseModel == True:
+            debug_image = draw_info_text(
+                                debug_image,
+                                keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labelspose[pose_id]
+                                )
+        else:
+             debug_image = draw_info_text(
+                                debug_image,
+                                keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],
+                                )
 
         # Screen reflection
         cv.imshow('Facial Emotion and focus Recognition', debug_image)
