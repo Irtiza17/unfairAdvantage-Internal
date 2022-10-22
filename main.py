@@ -13,7 +13,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
-poseModel = True
+poseModel = False
 focusModel = True
 emotionModel = True
 
@@ -22,6 +22,7 @@ camera = "cam"
 model_path ='model/keypoint_classifier/keypoint_classifier.tflite'
 model_path2 ='model/keypoint_classifier/keypoint_classifier2.tflite'
 model_path3 ='model/keypoint_classifier/keypoint_classifier3.tflite'
+
 ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 133, 473, 474, 475, 476, 
         477, 466, 388, 387, 386, 385, 384, 398, 263, 249, 390, 373, 374, 380, 381, 382, 362, 468,469, 470, 
         471, 472]
@@ -133,7 +134,7 @@ def draw_info_text(image, facial_text1,facial_text2='',facial_text3=''):
     val = []
     if facial_text1 == 'Focused':
         val.append(1)
-    if facial_text2 == 'Happy':
+    if facial_text2 == 'Positive':
         val.append(1)
     if facial_text3 == 'Sitting':
         val.append(1)
@@ -204,20 +205,20 @@ with mp_holistic.Holistic(
     for idx2, i2 in enumerate(keypoint_classifier_labels2):
         print(idx2,i2)
 
-    with open('model/keypoint_classifier/keypoint_classifier_labelpose.csv',
+    with open('model/keypoint_classifier/keypoint_classifier_label3.csv',
                 encoding='utf-8-sig') as f:
-        keypoint_classifier_labelspose = csv.reader(f)
-        keypoint_classifier_labelspose = [
-            row[0] for row in keypoint_classifier_labelspose
+        keypoint_classifier_labels3 = csv.reader(f)
+        keypoint_classifier_labels3 = [
+            row[0] for row in keypoint_classifier_labels3
         ]
 
-    for idx3, i3 in enumerate(keypoint_classifier_labelspose):
+    for idx3, i3 in enumerate(keypoint_classifier_labels3):
         print(idx3,i3)
     
     use_brect = True    
     
     if camera == 'cam':
-        cap_device = 0
+        cap_device = 1
         cap_width = 1920
         cap_height = 1080
         # Camera preparation
@@ -321,7 +322,7 @@ with mp_holistic.Holistic(
         if poseModel == True:
             debug_image = draw_info_text(
                                 debug_image,
-                                keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labelspose[pose_id]
+                                keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labels3[pose_id]
                                 )
         else:
              debug_image = draw_info_text(
