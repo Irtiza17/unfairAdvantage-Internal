@@ -7,6 +7,7 @@ import cv2 as cv
 import numpy as np
 import mediapipe as mp
 from model import KeyPointClassifier
+from scoring import score,assignscore
 
 
 mp_drawing = mp.solutions.drawing_utils
@@ -329,6 +330,11 @@ with mp_holistic.Holistic(
                                 debug_image,
                                 keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],
                                 )
+
+        # Scoring part
+        eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
+        emotionFocusVal = keypoint_classifier_labels2[facial_emotion_id]
+        assignscore(eyeFocusVal,emotionFocusVal)
 
         # Screen reflection
         cv.imshow('Facial Emotion and focus Recognition', debug_image)
