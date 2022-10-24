@@ -2,12 +2,12 @@ import csv
 import copy
 import itertools
 import depthai
-
+import pandas as pd
 import cv2 as cv
 import numpy as np
 import mediapipe as mp
 from model import KeyPointClassifier
-from scoring import score,assignscore
+from scoring import score,report
 
 
 mp_drawing = mp.solutions.drawing_utils
@@ -28,6 +28,7 @@ ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 1
         477, 466, 388, 387, 386, 385, 384, 398, 263, 249, 390, 373, 374, 380, 381, 382, 362, 468,469, 470, 
         471, 472]
 
+df = pd.DataFrame(columns=['Date','Time','Focus','Emotion'])
 
 def calc_landmark_list(image, landmarks,ROI=False,Pose=False):
     image_width, image_height = image.shape[1], image.shape[0]
@@ -219,7 +220,7 @@ with mp_holistic.Holistic(
     use_brect = True    
     
     if camera == 'cam':
-        cap_device = 1
+        cap_device = 0
         cap_width = 1920
         cap_height = 1080
         # Camera preparation
@@ -332,12 +333,14 @@ with mp_holistic.Holistic(
                                 )
 
         # Scoring part
+        filepath = 'D:/Internship/Tasks/unfairAdvantage/scorelog/score.csv'
         eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
         emotionFocusVal = keypoint_classifier_labels2[facial_emotion_id]
-        assignscore(eyeFocusVal,emotionFocusVal)
+        df = score(eyeFocusVal,emotionFocusVal,df)
 
         # Screen reflection
         cv.imshow('Facial Emotion and focus Recognition', debug_image)
-
+    df.to_csv(filepath,index=False)
+    report(df)
     # cap.release()
     cv.destroyAllWindows()
