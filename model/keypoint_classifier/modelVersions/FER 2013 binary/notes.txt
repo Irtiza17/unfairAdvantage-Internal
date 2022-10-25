@@ -1,0 +1,12 @@
+Positive == happy, surprise 
+Total frames = 10,386
+Captured frames = 6,837
+
+===================================================
+Negative == sad, neutral, disgust
+Total frames = 10,231
+Captured frames = 6,417
+
+===================================================
+
+Results are better than previous one on FER 2013 and 4 categories. But still not better than the one that was trained personally on single person.

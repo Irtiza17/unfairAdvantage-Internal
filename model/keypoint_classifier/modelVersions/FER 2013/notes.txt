@@ -1,0 +1,13 @@
+5 emotions are listed FER 2013
+
+Happy = adequate detection = 5057 frames
+Neutral = not detected at all = 3675 frames
+Sad = not detected at all = 2635 frames
+Surprise = poor performance = 1800 frames
+Angry = not detected at all = 2161 frames
+
+
+total frames were about 24K and only 15.5K frames could been loaded and later trained.
+
+==========================================
+

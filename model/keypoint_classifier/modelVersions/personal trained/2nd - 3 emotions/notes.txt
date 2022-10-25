@@ -1,0 +1,7 @@
+3 emotions are detected === Total frames are 5141
+
+Sad = little difficult to detect for few subjects
+Neutral = ample results
+Happy = good results, easily detected.
+
+This model is trained on Ammar and working excellent on same subject. Also working on different face orientations.
