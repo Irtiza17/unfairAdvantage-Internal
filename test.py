@@ -109,7 +109,7 @@ for idx, i in enumerate(keypoint_classifier_labels):
 mode = 0
 use_brect = True
 
-root = "G:/My Drive/JP/JP/Tasks/unfairAdvantage/modelTrainingApproach/testLab_emotion/testImages/happy"
+root = "G:/My Drive/JP/JP/Tasks/unfairAdvantage/modelTrainingApproach/testLab_emotion/test"
 IMAGE_FILES = []
 result = []
 for path, subdirs, files in os.walk(root):
@@ -152,7 +152,8 @@ for idx, file in enumerate(IMAGE_FILES):
                         debug_image,
                         brect,
                         keypoint_classifier_labels[facial_emotion_id])
-                if keypoint_classifier_labels[facial_emotion_id] != 'Positive':
+                # print(facial_emotion_id)
+                if keypoint_classifier_labels[facial_emotion_id] != 'Negative':
                     print('This is the wrong detection',file)
                     # cv.imshow('Wrong image detection',image)
                     # cv.waitKey(0)
@@ -165,12 +166,12 @@ for idx, file in enumerate(IMAGE_FILES):
     else:
         print('facial landmarks not detected', file)
         noLandmark += 1
-        # cv.imshow('facial landmarks not detected', image)
-        # cv.waitKey(0)
+        cv.imshow('facial landmarks not detected', image)
+        cv.waitKey(0)
 print(result)
-print(len(result))
-print(idx)
-correct_result = result.count('Positive')
+print('Total results detected',len(result))
+print('Total images provided',idx+1)
+correct_result = result.count('Negative')
 accuracy = (correct_result/len(result))*100
 print('Accuracy of model is: ',accuracy)
 print('List index out of range error: ',count)
