@@ -7,7 +7,7 @@ import cv2 as cv
 import numpy as np
 import mediapipe as mp
 from model import KeyPointClassifier
-from scoring import score,report
+from scoring import score,secondScore, videoMapping
 
 
 mp_drawing = mp.solutions.drawing_utils
@@ -27,6 +27,10 @@ model_path3 ='model/keypoint_classifier/keypoint_classifier3.tflite'
 ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 133, 473, 474, 475, 476, 
         477, 466, 388, 387, 386, 385, 384, 398, 263, 249, 390, 373, 374, 380, 381, 382, 362, 468,469, 470, 
         471, 472]
+
+filepath = 'D:/Internship/Tasks/unfairAdvantage/scorelog/score.csv'
+filepath2 = 'D:/Internship/Tasks/unfairAdvantage/scorelog/secondscore.csv'
+filepath3 = 'D:/Internship/Tasks/unfairAdvantage/scorelog/Video.csv'
 
 df = pd.DataFrame(columns=['Date','Time','Focus','Emotion'])
 
@@ -240,8 +244,11 @@ with mp_holistic.Holistic(
                 # Camera capture
                 in_rgb = q_rgb.get()
                 image = in_rgb.getCvFrame()
-
+    start = 0
     while True:
+        if cv.waitKey(5) & 0xFF == ord('t'):
+            start = 1
+        print(start)
         # Process Key (ESC: end)
         key = cv.waitKey(10)
         if key == 27:  # ESC
@@ -333,14 +340,19 @@ with mp_holistic.Holistic(
                                 )
 
         # Scoring part
-        filepath = 'D:/Internship/Tasks/unfairAdvantage/scorelog/score.csv'
         eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
         emotionFocusVal = keypoint_classifier_labels2[facial_emotion_id]
-        df = score(eyeFocusVal,emotionFocusVal,df)
+        if start == 1:
+            df = score(eyeFocusVal,emotionFocusVal,df)
+        
 
         # Screen reflection
         cv.imshow('Facial Emotion and focus Recognition', debug_image)
     df.to_csv(filepath,index=False)
-    report(df)
+    df2 = secondScore(df)
+    df2.to_csv(filepath2,index=False)
+    df3 = videoMapping(df2)
+    df3.to_csv(filepath3,index=False)
+
     # cap.release()
     cv.destroyAllWindows()
