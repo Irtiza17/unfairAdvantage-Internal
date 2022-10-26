@@ -8,38 +8,55 @@ import numpy as np
 import mediapipe as mp
 from model import KeyPointClassifier
 from scoring import score,secondScore, videoMapping
-
+import datetime
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_holistic = mp.solutions.holistic
 
-poseModel = False
+HeadModel = True
 focusModel = True
 emotionModel = True
 
+#Camera Values can be "cam","video","oakD" depending on income stream source.
 camera = "cam"
 
-model_path ='model/keypoint_classifier/keypoint_classifier.tflite'
-model_path2 ='model/keypoint_classifier/keypoint_classifier2.tflite'
-model_path3 ='model/keypoint_classifier/keypoint_classifier3.tflite'
+model_path ='model/keypoint_classifier/keypoint_classifier.tflite' # Focus Model Path 
+model_path2 ='model/keypoint_classifier/keypoint_classifier2.tflite' # Emotion Model Path
+model_path3 ='model/keypoint_classifier/keypoint_classifier3.tflite' # Head Model
 
 ROI = [246, 161, 160, 159, 158, 157, 173, 33, 7, 163, 144, 145, 153, 154, 155, 133, 473, 474, 475, 476, 
         477, 466, 388, 387, 386, 385, 384, 398, 263, 249, 390, 373, 374, 380, 381, 382, 362, 468,469, 470, 
         471, 472]
 
-filepath = 'D:/Internship/Tasks/unfairAdvantage/scorelog/score.csv'
-filepath2 = 'D:/Internship/Tasks/unfairAdvantage/scorelog/secondscore.csv'
-filepath3 = 'D:/Internship/Tasks/unfairAdvantage/scorelog/Video.csv'
+noseTip= [1]
+noseBottom= [2]
+noseRightCorner= [98]
+noseLeftCorner= [327]
 
-df = pd.DataFrame(columns=['Date','Time','Focus','Emotion'])
+rightCheek= [205]
+leftCheek= [425]
 
-def calc_landmark_list(image, landmarks,ROI=False,Pose=False):
+silhouette= [
+10,  338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288,
+397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136,
+172, 58,  132, 93,  234, 127, 162, 21,  54,  103, 67,  109
+]
+
+ROI2 =  silhouette + noseTip + noseBottom + noseRightCorner + noseLeftCorner + rightCheek + leftCheek
+
+filepath = 'scorelog/score.csv' #csv file for score data of every frame.
+filepath2 = 'scorelog/secondscore.csv' # csv file for score data of every second. 
+filepath3 = 'scorelog/VideoScore.csv' # csv file for videos information and score mapping against videos.
+
+df = pd.DataFrame(columns=['Date','Time','Focus','Emotion','Head'])
+
+def calc_landmark_list(image, landmarks,ROI=False):
     image_width, image_height = image.shape[1], image.shape[0]
 
     landmark_point = []
     # Keypoint
-    if ROI == False and Pose == False:
+    if ROI == False:
         for _, landmark in enumerate(landmarks.landmark):
         # for i in ROI:
             # landmark = landmarks.landmark[i]
@@ -50,12 +67,6 @@ def calc_landmark_list(image, landmarks,ROI=False,Pose=False):
     elif ROI != False:
         for i in ROI:
             landmark = landmarks.landmark[i]
-            landmark_x = min(int(landmark.x * image_width), image_width - 1)
-            landmark_y = min(int(landmark.y * image_height), image_height - 1)
-            landmark_point.append([landmark_x, landmark_y])
-
-    elif Pose != False:
-        for _, landmark in enumerate(landmarks.pose_landmarks.landmark):
             landmark_x = min(int(landmark.x * image_width), image_width - 1)
             landmark_y = min(int(landmark.y * image_height), image_height - 1)
             landmark_point.append([landmark_x, landmark_y])
@@ -119,42 +130,38 @@ def calc_bounding_rect(image, landmarks):
     return [x, y, x + w, y + h]
 
 
-def draw_info_text(image, facial_text1,facial_text2='',facial_text3=''):
+def draw_info_text(image, focus_text,emotion_text='',head_text=''):
     cv.rectangle(image, (0, 0), (250,160),
                  (0, 0, 0), -1)
 
-    if facial_text1 != "":
-        info_text = 'Gaze: ' + facial_text1
+    if focus_text != "":
+        info_text = 'Gaze: ' + focus_text
         cv.putText(image, info_text, (5,30),
                 cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 1, cv.LINE_AA)
     
-    if facial_text2 != "":
-        info_text2 = 'Emotion: ' + facial_text2
+    if emotion_text != "":
+        info_text2 = 'Emotion: ' + emotion_text
         cv.putText(image, info_text2, (5,70),
                 cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 1, cv.LINE_AA)
                 
-    if facial_text3 != "":
-        info_text3 = 'Pose: ' + facial_text3
+    if head_text != "":
+        info_text3 = 'Head: ' + head_text
         cv.putText(image, info_text3, (5,110),
                 cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 1, cv.LINE_AA)
     val = []
-    if facial_text1 == 'Focused':
+    if focus_text == 'Focused':
         val.append(1)
-    if facial_text2 == 'Positive':
+    if emotion_text == 'Positive':
         val.append(1)
-    if facial_text3 == 'Sitting':
+    if head_text == 'Aligned':
         val.append(1)
-    if poseModel == False:
+    if HeadModel == False:
         pars = 2
     else:
         pars = 3
 
     cv.putText(image, f"Score: {sum(val)}/{pars}", (5,150),
                 cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 1, cv.LINE_AA)
-
-    # cv.putText(image, 'SCORING: [Focus(5) Emotion(4)]', (brect[0] + 5, brect[1] + 40),
-    #            cv.FONT_HERSHEY_SIMPLEX, 0.3, (255, 255, 255), 1, cv.LINE_AA)
-
 
     return image
 
@@ -169,190 +176,145 @@ def oakD():
     cam_rgb.preview.link(xout_rgb.input)
     return pipeline
 
-
-
-with mp_holistic.Holistic(
-    min_detection_confidence=0.5,
-    min_tracking_confidence=0.5) as holistic:
-
-
     
-    
-    mode = 0
+mode = 0
 
-    # Model load
-    mp_face_mesh = mp.solutions.face_mesh
-    face_mesh = mp_face_mesh.FaceMesh(
-            max_num_faces=1,
-            refine_landmarks=True,
-            min_detection_confidence=0.5,
-            min_tracking_confidence=0.5) 
+# Model load
+mp_face_mesh = mp.solutions.face_mesh
+face_mesh = mp_face_mesh.FaceMesh(
+        max_num_faces=1,
+        refine_landmarks=True,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5) 
 
-    keypoint_classifier = KeyPointClassifier(model_path)
-    keypoint_classifier2 = KeyPointClassifier(model_path2)
-    keypoint_classifier3 = KeyPointClassifier(model_path3)
+keypoint_classifier = KeyPointClassifier(model_path)
+keypoint_classifier2 = KeyPointClassifier(model_path2)
+keypoint_classifier3 = KeyPointClassifier(model_path3)
 
-    with open('model/keypoint_classifier/keypoint_classifier_label.csv',
-                encoding='utf-8-sig') as f:
-        keypoint_classifier_labels = csv.reader(f)
-        keypoint_classifier_labels = [
-            row[0] for row in keypoint_classifier_labels
-        ]
-    for idx, i in enumerate(keypoint_classifier_labels):
-        print(idx,i)
-    # Read labels
-    with open('model/keypoint_classifier/keypoint_classifier_label2.csv',
-                encoding='utf-8-sig') as f:
-        keypoint_classifier_labels2 = csv.reader(f)
-        keypoint_classifier_labels2 = [
-            row[0] for row in keypoint_classifier_labels2
-        ]
+with open('model/keypoint_classifier/keypoint_classifier_label.csv',
+            encoding='utf-8-sig') as f:
+    keypoint_classifier_labels = csv.reader(f)
+    keypoint_classifier_labels = [
+        row[0] for row in keypoint_classifier_labels
+    ]
 
-    for idx2, i2 in enumerate(keypoint_classifier_labels2):
-        print(idx2,i2)
+# Read labels
+with open('model/keypoint_classifier/keypoint_classifier_label2.csv',
+            encoding='utf-8-sig') as f:
+    keypoint_classifier_labels2 = csv.reader(f)
+    keypoint_classifier_labels2 = [
+        row[0] for row in keypoint_classifier_labels2
+    ]
 
-    with open('model/keypoint_classifier/keypoint_classifier_label3.csv',
-                encoding='utf-8-sig') as f:
-        keypoint_classifier_labels3 = csv.reader(f)
-        keypoint_classifier_labels3 = [
-            row[0] for row in keypoint_classifier_labels3
-        ]
+with open('model/keypoint_classifier/keypoint_classifier_label3.csv',
+            encoding='utf-8-sig') as f:
+    keypoint_classifier_labels3 = csv.reader(f)
+    keypoint_classifier_labels3 = [
+        row[0] for row in keypoint_classifier_labels3
+    ]
 
-    for idx3, i3 in enumerate(keypoint_classifier_labels3):
-        print(idx3,i3)
-    
-    use_brect = True    
-    
-    if camera == 'cam':
-        cap_device = 0
-        cap_width = 1920
-        cap_height = 1080
-        # Camera preparation
-        cap = cv.VideoCapture(cap_device)
-        cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
-        cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
-    
-    elif camera == 'oakD':
-        pipeline= oakD()
-        with depthai.Device(pipeline) as device:
-            q_rgb = device.getOutputQueue(name="rgb", maxSize=4, blocking=False)
-            while True:
-            # Process Key (ESC: end)
-                key = cv.waitKey(10)
-                if key == 27:  # ESC
-                    break
-                # Camera capture
-                in_rgb = q_rgb.get()
-                image = in_rgb.getCvFrame()
-    start = 0
-    while True:
-        if cv.waitKey(5) & 0xFF == ord('t'):
-            start = 1
-        print(start)
+use_brect = True    
+
+if camera == 'cam':
+    cap_device = 0
+    cap_width = 1920
+    cap_height = 1080
+    # Camera preparation
+    cap = cv.VideoCapture(cap_device)
+    cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
+    cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
+
+elif camera == 'oakD':
+    pipeline= oakD()
+    with depthai.Device(pipeline) as device:
+        q_rgb = device.getOutputQueue(name="rgb", maxSize=4, blocking=False)
+        while True:
         # Process Key (ESC: end)
-        key = cv.waitKey(10)
-        if key == 27:  # ESC
-            break
-
-        # Camera capture
-        ret, image = cap.read()
-        if not ret:
-            break
-        image = cv.flip(image, 1)  # Mirror display
-        debug_image = copy.deepcopy(image)
-
-        # Detection implementation
-        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
-
-        if focusModel == True or emotionModel == True:
-
-            image.flags.writeable = False
-            results = face_mesh.process(image)
-            image.flags.writeable = True
-
-            if results.multi_face_landmarks is not None:
-                for face_landmarks in results.multi_face_landmarks:
-                    # Bounding box calculation
-                    brect = calc_bounding_rect(debug_image, face_landmarks)
-
-                    # Landmark calculation
-                    # landmark_list1 = calc_landmark_list(debug_image, face_landmarks,ROI)
-                    if focusModel == True:
-                        focus_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
-                        # Conversion to relative coordinates / normalized coordinates
-                        pre_processed_landmark_list1 = pre_process_landmark(
-                        focus_landmark_list)
-                        facial_focus_id = keypoint_classifier(pre_processed_landmark_list1)
+            key = cv.waitKey(10)
+            if key == 27:  # ESC
+                break
+            # Camera capture
+            in_rgb = q_rgb.get()
+            image = in_rgb.getCvFrame()
 
 
+start = 0 # While start = 0, it will continue to provide stream, at decided time (21s), it will stop the stream by changing its value.
+scoreStart = 0 # When scoring will start, value will change to 1.
+now = datetime.datetime.now()
+while start == 0:
+    next = datetime.datetime.now()
+    timedif = (next - now).seconds
+    # Process Key (ESC: end)
+    key = cv.waitKey(10)
+    if key == 27:  # ESC
+        break
 
-                    if emotionModel == True:
-                        emotion_landmark_list = calc_landmark_list(debug_image, face_landmarks)
-                        pre_processed_landmark_list2 = pre_process_landmark(
-                        emotion_landmark_list)
-                        facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list2)
-                        if cv.waitKey(5) & 0xFF == ord('t'):
-                            print(facial_emotion_id)
-                
-                    
-                    
-                    # Drawing part
-                    # debug_image = draw_bounding_rect(use_brect, debug_image, brect)
-                    # debug_image = draw_info_text(
-                    #         debug_image,
-                    #         brect,
-                    #         keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id])
+    # Camera capture
+    ret, image = cap.read()
+    if not ret:
+        break
+    image = cv.flip(image, 1)  # Mirror display
+    debug_image = copy.deepcopy(image)
 
-            
+    # Detection implementation
+    image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
 
-        if poseModel == True:
-            image.flags.writeable = False
-            results = holistic.process(image)
-            image.flags.writeable = True
+    image.flags.writeable = False
+    results = face_mesh.process(image)
+    image.flags.writeable = True
 
-            if results is not None:
-                # Bounding box calculation
-                # brect = calc_bounding_rect(debug_image, results)
+    if results.multi_face_landmarks is not None:
+        for face_landmarks in results.multi_face_landmarks:
+            # Bounding box calculation
+            brect = calc_bounding_rect(debug_image, face_landmarks)
 
-                # Landmark calculation
-                pose_landmark_list = calc_landmark_list(debug_image, results,Pose=True)
+            # Landmark calculation
+            if focusModel == True:
+                focus_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
+                # Conversion to relative coordinates / normalized coordinates
+                pre_processed_landmark_list1 = pre_process_landmark(
+                focus_landmark_list)
+                facial_focus_id = keypoint_classifier(pre_processed_landmark_list1)
 
+            if emotionModel == True:
+                emotion_landmark_list = calc_landmark_list(debug_image, face_landmarks)
+                # Conversion to relative coordinates / normalized coordinates
+                pre_processed_landmark_list2 = pre_process_landmark(
+                emotion_landmark_list)
+                facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list2)
+
+            if HeadModel == True:
+                head_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI2)
                 # Conversion to relative coordinates / normalized coordinates
                 pre_processed_landmark_list3 = pre_process_landmark(
-                    pose_landmark_list)
+                head_landmark_list)
+                head_id = keypoint_classifier3(pre_processed_landmark_list3)
 
-                #focus classification
-                pose_id = keypoint_classifier3(pre_processed_landmark_list3)
-                if cv.waitKey(5) & 0xFF == ord('s'):
-                    print(pose_id)
-                    
+
+            
         # Drawing part
         debug_image = draw_bounding_rect(use_brect, debug_image, brect)
-        if poseModel == True:
-            debug_image = draw_info_text(
+        debug_image = draw_info_text(
                                 debug_image,
-                                keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labels3[pose_id]
+                                keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labels3[head_id]
                                 )
-        else:
-             debug_image = draw_info_text(
-                                debug_image,
-                                keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],
-                                )
+    # Scoring part
+    eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
+    emotionVal = keypoint_classifier_labels2[facial_emotion_id]
+    headVal = keypoint_classifier_labels3[head_id]
+    if timedif >= 10:
+        df = score(eyeFocusVal,emotionVal,headVal,df)
+        scoreStart = 1
+        if timedif > 25:
+            start = 1
 
-        # Scoring part
-        eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
-        emotionFocusVal = keypoint_classifier_labels2[facial_emotion_id]
-        if start == 1:
-            df = score(eyeFocusVal,emotionFocusVal,df)
-        
+    # Screen reflection
+    cv.imshow('Facial Emotion and focus Recognition', debug_image)
+df.to_csv(filepath,index=False)
+df2 = secondScore(df)
+df2.to_csv(filepath2,index=False)
+df3 = videoMapping(df2)
+df3.to_csv(filepath3,index=False)
 
-        # Screen reflection
-        cv.imshow('Facial Emotion and focus Recognition', debug_image)
-    df.to_csv(filepath,index=False)
-    df2 = secondScore(df)
-    df2.to_csv(filepath2,index=False)
-    df3 = videoMapping(df2)
-    df3.to_csv(filepath3,index=False)
-
-    # cap.release()
-    cv.destroyAllWindows()
+# cap.release()
+cv.destroyAllWindows()
