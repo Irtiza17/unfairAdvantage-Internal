@@ -14,7 +14,7 @@ def score(s1,s2,s3,df):
         emotion = 1
     else:
         emotion = 0
-    if str(s3).lower() == "aligned":
+    if str(s3).lower() == "center":
         head = 1
     else:
         head = 0

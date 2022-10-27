@@ -19,7 +19,7 @@ focusModel = True
 emotionModel = True
 
 #Camera Values can be "cam","video","oakD" depending on income stream source.
-camera = "cam"
+camera = "video"
 
 model_path ='model/keypoint_classifier/keypoint_classifier.tflite' # Focus Model Path 
 model_path2 ='model/keypoint_classifier/keypoint_classifier2.tflite' # Emotion Model Path
@@ -153,7 +153,7 @@ def draw_info_text(image, focus_text,emotion_text='',head_text=''):
         val.append(1)
     if emotion_text == 'Positive':
         val.append(1)
-    if head_text == 'Aligned':
+    if head_text == 'Center':
         val.append(1)
     if HeadModel == False:
         pars = 2
@@ -237,9 +237,19 @@ elif camera == 'oakD':
             in_rgb = q_rgb.get()
             image = in_rgb.getCvFrame()
 
+elif camera == 'video':
+    cap_device = 'videos/video6.mp4'
+    cap_width = 1920
+    cap_height = 1080
+    # Camera preparation
+    cap = cv.VideoCapture(cap_device)
+    cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
+    cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
+
 
 start = 0 # While start = 0, it will continue to provide stream, at decided time (21s), it will stop the stream by changing its value.
 scoreStart = 0 # When scoring will start, value will change to 1.
+pause = 0
 now = datetime.datetime.now()
 while start == 0:
     next = datetime.datetime.now()
@@ -250,14 +260,20 @@ while start == 0:
         break
 
     # Camera capture
-    ret, image = cap.read()
-    if not ret:
-        break
-    image = cv.flip(image, 1)  # Mirror display
-    debug_image = copy.deepcopy(image)
+    if key == ord('p'):
+        pause = 1
+    elif key == ord('r'):
+        pause = 0
 
-    # Detection implementation
-    image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+    if pause == 0:
+        ret, image = cap.read()
+        if not ret:
+            break
+        image = cv.flip(image, 1)  # Mirror display
+        debug_image = copy.deepcopy(image)
+
+        # Detection implementation
+        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
 
     image.flags.writeable = False
     results = face_mesh.process(image)
@@ -298,15 +314,17 @@ while start == 0:
                                 debug_image,
                                 keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labels3[head_id]
                                 )
-    # Scoring part
-    eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
-    emotionVal = keypoint_classifier_labels2[facial_emotion_id]
-    headVal = keypoint_classifier_labels3[head_id]
-    if timedif >= 10:
-        df = score(eyeFocusVal,emotionVal,headVal,df)
-        scoreStart = 1
-        if timedif > 25:
-            start = 1
+        # Scoring part
+        if pause == 0:
+                eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
+                emotionVal = keypoint_classifier_labels2[facial_emotion_id]
+                headVal = keypoint_classifier_labels3[head_id]
+                if timedif >= 1:
+                    df = score(eyeFocusVal,emotionVal,headVal,df)
+                    scoreStart = 1
+                    # if timedif > 25:
+                    #     start = 1
+
 
     # Screen reflection
     cv.imshow('Facial Emotion and focus Recognition', debug_image)
