@@ -132,3 +132,5 @@ dmypy.json
 *.bat
 prac.py
 demoVideos/
+training.ipynb
+scoring.ipynb
