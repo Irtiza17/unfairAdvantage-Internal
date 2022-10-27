@@ -319,11 +319,11 @@ while start == 0:
                 eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
                 emotionVal = keypoint_classifier_labels2[facial_emotion_id]
                 headVal = keypoint_classifier_labels3[head_id]
-                if timedif >= 1:
+                if timedif >= 0:
                     df = score(eyeFocusVal,emotionVal,headVal,df)
                     scoreStart = 1
-                    # if timedif > 25:
-                    #     start = 1
+                    if timedif > 21:
+                        start = 1
 
 
     # Screen reflection
