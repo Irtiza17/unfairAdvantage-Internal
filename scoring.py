@@ -5,6 +5,7 @@ import numpy as np
 timelist = []
 
 def score(s1,s2,s3,df):
+    # Calculating score based on Focus, Emotion and Head Values
     if str(s1).lower() == "focused":
         focus = 1
     else:
@@ -37,19 +38,21 @@ def secondScore(df):
         timedif = int((nextTime-startTime).seconds)
         if timedif == 1:
             startTime = datetime.datetime.strptime(df['Time'].iloc[i], "%H:%M:%S:%f")
-            x = (df.iloc[initial:(i+1),2]).tolist() #Slicing Focus values for 1 second
-            y = (df.iloc[initial:(i+1),3]).tolist() #Slicing Emotion values for 1 second
-            z = (df.iloc[initial:(i+1),4]).tolist() #Slicing Head values for 1 second
+            x = (df.iloc[initial:(i+1),2]).tolist() #Slicing Focus values for 1 second and converting to list
+            y = (df.iloc[initial:(i+1),3]).tolist() #Slicing Emotion values for 1 second and converting to list
+            z = (df.iloc[initial:(i+1),4]).tolist() #Slicing Head values for 1 second and converting to list
             initial = i
-            x2  = max(x,key = x.count)
-            y2  = max(y,key = y.count)
-            z2  = max(z,key = z.count)
-            total = x2+y2+z2
+            x2  = max(x,key = x.count) #getting the most frequent score value for Focus
+            y2  = max(y,key = y.count) #getting the most frequent score value for Emotion
+            z2  = max(z,key = z.count) #getting the most frequent score value for Head
+            total = x2+y2+z2 #Total score 
+
             df2_new_row = pd.DataFrame({'Date':[df['Date'].iloc[i]],'Time':[df['Time'].iloc[i]],'Focus':[x2],'Emotion':[y2],'Head':[z2],'Total':[total]})    
-            df2 = pd.concat([df2, df2_new_row],ignore_index=True)
+            df2 = pd.concat([df2, df2_new_row],ignore_index=True) #Adding the values to the dataframe
     return df2
 
 def videoMapping(inputdf):
+    #Function to map the scores corresponding the videos and their intelligence tags
     df3= inputdf
     x = len(df3)/3
     y = round(x)
