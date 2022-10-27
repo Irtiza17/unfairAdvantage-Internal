@@ -238,7 +238,7 @@ elif camera == 'oakD':
             image = in_rgb.getCvFrame()
 
 elif camera == 'video':
-    cap_device = 'videos/video6.mp4'
+    cap_device = 'videos/video1.mp4'
     cap_width = 1920
     cap_height = 1080
     # Camera preparation
@@ -249,7 +249,7 @@ elif camera == 'video':
 
 start = 0 # While start = 0, it will continue to provide stream, at decided time (21s), it will stop the stream by changing its value.
 scoreStart = 0 # When scoring will start, value will change to 1.
-pause = 0
+pause = 0 # When pause = 0, video will continue to run, when pause = 1 , video will be paused
 now = datetime.datetime.now()
 while start == 0:
     next = datetime.datetime.now()
@@ -259,13 +259,14 @@ while start == 0:
     if key == 27:  # ESC
         break
 
-    # Camera capture
+    #Pausing functionality
     if key == ord('p'):
         pause = 1
     elif key == ord('r'):
         pause = 0
 
     if pause == 0:
+        # Camera capture
         ret, image = cap.read()
         if not ret:
             break
@@ -275,55 +276,66 @@ while start == 0:
         # Detection implementation
         image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
 
-    image.flags.writeable = False
-    results = face_mesh.process(image)
-    image.flags.writeable = True
+        image.flags.writeable = False
+        results = face_mesh.process(image)
+        image.flags.writeable = True
 
-    if results.multi_face_landmarks is not None:
-        for face_landmarks in results.multi_face_landmarks:
-            # Bounding box calculation
-            brect = calc_bounding_rect(debug_image, face_landmarks)
+        if results.multi_face_landmarks is not None:
+            for face_landmarks in results.multi_face_landmarks:
+                # Bounding box calculation
+                brect = calc_bounding_rect(debug_image, face_landmarks)
 
-            # Landmark calculation
-            if focusModel == True:
-                focus_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
-                # Conversion to relative coordinates / normalized coordinates
-                pre_processed_landmark_list1 = pre_process_landmark(
-                focus_landmark_list)
-                facial_focus_id = keypoint_classifier(pre_processed_landmark_list1)
+                # Landmark calculation
+                if focusModel == True:
+                    focus_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
+                    # Conversion to relative coordinates / normalized coordinates
+                    pre_processed_landmark_list1 = pre_process_landmark(
+                    focus_landmark_list)
+                    facial_focus_id = keypoint_classifier(pre_processed_landmark_list1)
 
-            if emotionModel == True:
-                emotion_landmark_list = calc_landmark_list(debug_image, face_landmarks)
-                # Conversion to relative coordinates / normalized coordinates
-                pre_processed_landmark_list2 = pre_process_landmark(
-                emotion_landmark_list)
-                facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list2)
+                if emotionModel == True:
+                    emotion_landmark_list = calc_landmark_list(debug_image, face_landmarks)
+                    # Conversion to relative coordinates / normalized coordinates
+                    pre_processed_landmark_list2 = pre_process_landmark(
+                    emotion_landmark_list)
+                    facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list2)
 
-            if HeadModel == True:
-                head_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI2)
-                # Conversion to relative coordinates / normalized coordinates
-                pre_processed_landmark_list3 = pre_process_landmark(
-                head_landmark_list)
-                head_id = keypoint_classifier3(pre_processed_landmark_list3)
-
-
-            
-        # Drawing part
-        debug_image = draw_bounding_rect(use_brect, debug_image, brect)
-        debug_image = draw_info_text(
-                                debug_image,
-                                keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labels3[head_id]
-                                )
-        # Scoring part
-        if pause == 0:
+                if HeadModel == True:
+                    head_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI2)
+                    # Conversion to relative coordinates / normalized coordinates
+                    pre_processed_landmark_list3 = pre_process_landmark(
+                    head_landmark_list)
+                    head_id = keypoint_classifier3(pre_processed_landmark_list3)
+  
+            # Drawing part
+            try:
+                debug_image = draw_bounding_rect(use_brect, debug_image, brect)
+                debug_image = draw_info_text(
+                                    debug_image,
+                                    keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labels3[head_id]
+                                    )
+            # Scoring part
                 eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
                 emotionVal = keypoint_classifier_labels2[facial_emotion_id]
                 headVal = keypoint_classifier_labels3[head_id]
-                if timedif >= 0:
-                    df = score(eyeFocusVal,emotionVal,headVal,df)
-                    scoreStart = 1
-                    if timedif > 21:
-                        start = 1
+                df = score(eyeFocusVal,emotionVal,headVal,df)
+            except:
+                pass
+        
+        else:
+            # Scoring part
+            eyeFocusVal = 'Not Focused'
+            emotionVal = 'Negative'
+            headVal = 'Not Center'
+            print('cant read')
+            df = score(eyeFocusVal,emotionVal,headVal,df)
+    else:
+        # Scoring part
+        eyeFocusVal = 'Not Focused'
+        emotionVal = 'Negative'
+        headVal = 'Not Center'
+        print('cant read')
+        df = score(eyeFocusVal,emotionVal,headVal,df)
 
 
     # Screen reflection
@@ -333,6 +345,5 @@ df2 = secondScore(df)
 df2.to_csv(filepath2,index=False)
 df3 = videoMapping(df2)
 df3.to_csv(filepath3,index=False)
-
 # cap.release()
 cv.destroyAllWindows()
