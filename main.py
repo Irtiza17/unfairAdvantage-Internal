@@ -9,6 +9,7 @@ import mediapipe as mp
 from model import KeyPointClassifier
 from scoring import score,secondScore, videoMapping
 import datetime
+from videoplaying import videoplayer
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -247,22 +248,16 @@ elif camera == 'video':
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
 
 
-cap_device2 = 'videos/video1.mp4'
-cap_width2 = 1920
-cap_height2 = 1080
-# Video Playback
-cap2 = cv.VideoCapture(cap_device2)
-cap2.set(cv.CAP_PROP_FRAME_WIDTH, cap_width2)
-cap2.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height2)
-
-
 start = 0 # While start = 0, it will continue to provide stream, at decided time (21s), it will stop the stream by changing its value.
 scoreStart = 0 # When scoring will start, value will change to 1.
 pause = 0 # When pause = 0, video will continue to run, when pause = 1 , video will be paused
+
+videoplayer()
+
 now = datetime.datetime.now()
 while start == 0:
     next = datetime.datetime.now()
-    print('Next1',next)
+    # print('Next1',next)
     timedif = (next - now).seconds
     # Process Key (ESC: end)
     key = cv.waitKey(10)
@@ -312,45 +307,31 @@ while start == 0:
                 head_id = keypoint_classifier3(pre_processed_landmark_list3)
 
         # Drawing part
-        # try:
-        debug_image = draw_bounding_rect(use_brect, debug_image, brect)
-        debug_image = draw_info_text(
-                            debug_image,
-                            keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labels3[head_id]
-                            )
-        # Scoring part
-        if timedif >= 10:
+        try:
+            debug_image = draw_bounding_rect(use_brect, debug_image, brect)
+            debug_image = draw_info_text(
+                                debug_image,
+                                keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labels3[head_id]
+                                )
+            # Scoring part
             eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
             emotionVal = keypoint_classifier_labels2[facial_emotion_id]
             headVal = keypoint_classifier_labels3[head_id]
             df = score(eyeFocusVal,emotionVal,headVal,next,df)
-        elif timedif < 10:
-            cv.rectangle(debug_image, (0, 600), (1920,700),
-                (0,255,0), -1)
-            cv.putText(debug_image, f"VIDEO WILL START IN {10 - int(timedif)}", (300,675),
-            cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv.LINE_AA)
-        # except:
-        #     pass
-    
+        except:
+            pass
+
     else:
         # Scoring part
-        if timedif >= 10:
-            eyeFocusVal = 'Not Focused'
-            emotionVal = 'Negative'
-            headVal = 'Not Center'
-            df = score(eyeFocusVal,emotionVal,headVal,df)
+        eyeFocusVal = 'Not Focused'
+        emotionVal = 'Negative'
+        headVal = 'Not Center'
+        df = score(eyeFocusVal,emotionVal,headVal,next,df)
         cv.rectangle(debug_image, (0, 0), (1920,100),
                  (0, 0,255), -1)
         cv.putText(debug_image, "CANNOT DETECT FACE", (300,75),
                 cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv.LINE_AA)
 
-    if timedif >= 10:
-        ret2,image2 = cap2.read()
-        if not ret2:
-            start = 1
-        elif ret2:
-            print('Next2',datetime.datetime.now())
-            cv.imshow('Video', image2)  
     # Screen reflection
     cv.imshow('Facial Emotion and focus Recognition', debug_image)
     # if timedif >= 10 and ret2:
