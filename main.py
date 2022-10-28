@@ -10,12 +10,15 @@ from model import KeyPointClassifier
 from scoring import score,secondScore, videoMapping
 import datetime
 import subprocess
+import sys
 
 
 camera = "cam"
-total_video_dur = 9
+total_video_dur = 30
 show_live = True
-video_display = True
+video_display = False
+video_file_name = "demovideo.mp4"
+camera_to_use = 1
 
 def main():
 
@@ -221,7 +224,7 @@ def main():
     use_brect = True    
 
     if camera == 'cam':
-        cap_device = 0
+        cap_device = camera_to_use
         cap_width = 1920
         cap_height = 1080
         # Camera preparation
@@ -255,9 +258,20 @@ def main():
     start = 0 # While start = 0, it will continue to provide stream, at decided time (21s), it will stop the stream by changing its value.
 
     if video_display:
-        subprocess.Popen(["C:/Program Files/VideoLAN/VLC/vlc.exe","videos/video1.mp4"])
+
+        systemOS = get_OS_platform()
+
+        if systemOS == "Windows":
+            child_process = subprocess.Popen(["C:/Program Files/VideoLAN/VLC/vlc.exe","videos/" + video_file_name])
+            print("Windows")
+        elif systemOS == "OS X":
+            child_process = subprocess.Popen(["/Applications/VLC.app/contents/MacOS/vlc", "videos/" + video_file_name])
+            print("Mac OS")
+        else: print("Other OS")
 
     now = datetime.datetime.now()
+
+
     while start == 0:
         next = datetime.datetime.now()
         # print('Next1',next)
@@ -340,14 +354,30 @@ def main():
         if show_live:
             cv.imshow('Facial Emotion and focus Recognition', debug_image)
         # if timedif >= 10 and ret2:
-            
-    df.to_csv(filepath,index=False)
-    df2 = secondScore(df)
-    df2.to_csv(filepath2,index=False)
-    df3 = videoMapping(df2)
-    df3.to_csv(filepath3,index=False)
-    # cap.release()
-    cv.destroyAllWindows()
+
+
+    # df.to_csv(filepath,index=False)
+    # df2 = secondScore(df)
+    # df2.to_csv(filepath2,index=False)
+    # df3 = videoMapping(df2)
+    # df3.to_csv(filepath3,index=False)
+    # # cap.release()
+    # cv.destroyAllWindows()
+    # child_process.terminate()
+
+
+def get_OS_platform():
+    platforms = {
+        'linux' : 'Linux',
+        'darwin' : 'OS X',
+        'win32' : 'Windows',
+        'nt' : 'Windows',
+        'win64' : 'Windows'
+    }
+    if sys.platform not in platforms:
+        return sys.platform
+
+    return platforms[sys.platform]
 
 if __name__ == "__main__":
     main()
