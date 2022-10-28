@@ -15,7 +15,7 @@ import sys
 
 camera = "cam"
 total_video_dur = 21
-show_live = False
+show_live = True
 video_display = True
 video_file_name = "demovideo.mp4"
 camera_to_use = 0
@@ -53,9 +53,9 @@ def main():
 
     ROI2 =  silhouette + noseTip + noseBottom + noseRightCorner + noseLeftCorner + rightCheek + leftCheek
 
-    filepath = 'scorelog/score.csv' #csv file for score data of every frame.
-    filepath2 = 'scorelog/secondscore.csv' # csv file for score data of every second. 
-    filepath3 = 'scorelog/VideoScore.csv' # csv file for videos information and score mapping against videos.
+    filepath = 'scorelog/SingleFrameData.csv'  #csv file for score data of every frame.
+    filepath2 = 'scorelog/PerSecondData.csv' # csv file for score data of every second.
+    filepath3 = 'scorelog/Report.csv' # csv file for videos information and score mapping against videos.
 
     df = pd.DataFrame(columns=['Date','Time','Focus','Emotion','Head'])
 
