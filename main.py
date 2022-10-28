@@ -14,9 +14,9 @@ import sys
 
 
 camera = "cam"
-total_video_dur = 30
-show_live = True
-video_display = False
+total_video_dur = 21
+show_live = False
+video_display = True
 video_file_name = "demovideo.mp4"
 camera_to_use = 0
 
@@ -356,14 +356,14 @@ def main():
         # if timedif >= 10 and ret2:
 
 
-    # df.to_csv(filepath,index=False)
-    # df2 = secondScore(df)
-    # df2.to_csv(filepath2,index=False)
-    # df3 = videoMapping(df2)
-    # df3.to_csv(filepath3,index=False)
-    # # cap.release()
-    # cv.destroyAllWindows()
-    # child_process.terminate()
+    df.to_csv(filepath,index=False)
+    df2 = secondScore(df)
+    df2.to_csv(filepath2,index=False)
+    df3 = videoMapping(df2)
+    df3.to_csv(filepath3,index=False)
+    # cap.release()
+    cv.destroyAllWindows()
+    child_process.terminate()
 
 
 def get_OS_platform():
