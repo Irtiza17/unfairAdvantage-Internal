@@ -52,16 +52,26 @@ def secondScore(df):
 def videoMapping(inputdf):
     #Function to map the scores corresponding the videos and their intelligence tags
     df3= inputdf
-    x = len(df3)/3
-    y = round(x)
-    Focus = {'video1':sum((df3.iloc[0:y,2]).tolist()),'video2':sum((df3.iloc[y:(2*y),2]).tolist()),'video3':sum((df3.iloc[(2*y):(3*y),2]).tolist())}  
-    Emotion = {'video1':sum((df3.iloc[0:y,3]).tolist()),'video2':sum((df3.iloc[y:(2*y),3]).tolist()),'video3':sum((df3.iloc[(2*y):(3*y),3]).tolist())}  
-    Head = {'video1':sum((df3.iloc[0:y,4]).tolist()),'video2':sum((df3.iloc[y:(2*y),4]).tolist()),'video3':sum((df3.iloc[(2*y):(3*y),4]).tolist())}  
-    Total = {'video1':sum((df3.iloc[0:y,5]).tolist()),'video2':sum((df3.iloc[y:(2*y),5]).tolist()),'video3':sum((df3.iloc[(2*y):(3*y),5]).tolist())}  
-
     filepath = 'scorelog/Videos.csv'
-
     outputdf = pd.read_csv(filepath)
+    lendf = len(outputdf)
+    x = len(df3)/lendf
+    print(lendf)
+    y = round(x)
+    Focus={}
+    Emotion={}
+    Head={}
+    Total={}
+    for i in range(lendf):
+        Focus[f'video{i+1}'] = sum((df3.iloc[i*y:(i+1)*y,2]).tolist())  
+        Emotion[f'video{i+1}'] = sum((df3.iloc[i*y:(i+1)*y,3]).tolist())  
+        Head[f'video{i+1}'] = sum((df3.iloc[i*y:(i+1)*y,4]).tolist())  
+        Total[f'video{i+1}'] = sum((df3.iloc[i*y:(i+1)*y,5]).tolist())  
+    # Emotion = {'video1':sum((df3.iloc[0:y,3]).tolist()),'video2':sum((df3.iloc[y:(2*y),3]).tolist()),'video3':sum((df3.iloc[(2*y):(3*y),3]).tolist())}  
+    # Head = {'video1':sum((df3.iloc[0:y,4]).tolist()),'video2':sum((df3.iloc[y:(2*y),4]).tolist()),'video3':sum((df3.iloc[(2*y):(3*y),4]).tolist())}  
+    # Total = {'video1':sum((df3.iloc[0:y,5]).tolist()),'video2':sum((df3.iloc[y:(2*y),5]).tolist()),'video3':sum((df3.iloc[(2*y):(3*y),5]).tolist())}  
+
+    
     outputdf['Focus'] = Focus.values()
     outputdf['Emotion'] = Emotion.values()
     outputdf['Head'] = Head.values()
