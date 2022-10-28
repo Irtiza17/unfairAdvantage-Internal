@@ -15,7 +15,7 @@ import subprocess
 camera = "cam"
 total_video_dur = 9
 show_live = True
-video_display = True
+video_display = False
 
 def main():
 
@@ -255,7 +255,7 @@ def main():
     start = 0 # While start = 0, it will continue to provide stream, at decided time (21s), it will stop the stream by changing its value.
 
     if video_display:
-        subprocess.Popen(["C:/Program Files/VideoLAN/VLC/vlc.exe","videos/video1.mp4"])
+        subprocess.Popen(["C:/Program Files (x86)/VideoLAN/VLC/vlc.exe","videos/video1.mp4"])
 
     now = datetime.datetime.now()
     while start == 0:
