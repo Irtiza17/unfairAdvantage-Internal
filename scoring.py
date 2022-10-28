@@ -4,7 +4,7 @@ import numpy as np
 
 timelist = []
 
-def score(s1,s2,s3,df):
+def score(s1,s2,s3,timeVal,df):
     # Calculating score based on Focus, Emotion and Head Values
     if str(s1).lower() == "focused":
         focus = 1
@@ -19,9 +19,8 @@ def score(s1,s2,s3,df):
     else:
         head = 0
 
-    now = datetime.datetime.now()
-    date = str(now.strftime("%Y-%m-%d"))
-    time = str(now.strftime("%H:%M:%S:%f")[:-3])
+    date = str(timeVal.strftime("%Y-%m-%d"))
+    time = str(timeVal.strftime("%H:%M:%S:%f")[:-3])
 
     df_new_row = pd.DataFrame({'Date':[date],'Time':[time],'Focus':[focus],'Emotion':[emotion],'Head':[head]})
     df = pd.concat([df, df_new_row])
@@ -30,7 +29,6 @@ def score(s1,s2,s3,df):
 
 def secondScore(df):
     df2 = pd.DataFrame(columns=['Date','Time','Focus','Emotion','Head','Total'])
-    row = []
     initial = 0
     startTime = datetime.datetime.strptime(df['Time'].iloc[0], "%H:%M:%S:%f")
     for i in range(len(df)):

@@ -1,4 +1,4 @@
 Video Name,Intelligence Tag,Duration,Focus,Emotion,Head,Total Score
-Video1,Spatial,0:00:05,0,0,0,0
-Video2,Interpersonal,0:00:05,0,0,0,0
-Video3,Existential,0:00:05,0,0,0,0
+Video1,Spatial,0:00:05,5,0,5,10
+Video2,Interpersonal,0:00:05,5,0,5,10
+Video3,Existential,0:00:05,5,0,5,10

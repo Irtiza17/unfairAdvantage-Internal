@@ -19,7 +19,7 @@ focusModel = True
 emotionModel = True
 
 #Camera Values can be "cam","video","oakD" depending on income stream source.
-camera = "video"
+camera = "cam"
 
 model_path ='model/keypoint_classifier/keypoint_classifier.tflite' # Focus Model Path 
 model_path2 ='model/keypoint_classifier/keypoint_classifier2.tflite' # Emotion Model Path
@@ -247,99 +247,114 @@ elif camera == 'video':
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
 
 
+cap_device2 = 'videos/video1.mp4'
+cap_width2 = 1920
+cap_height2 = 1080
+# Video Playback
+cap2 = cv.VideoCapture(cap_device2)
+cap2.set(cv.CAP_PROP_FRAME_WIDTH, cap_width2)
+cap2.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height2)
+
+
 start = 0 # While start = 0, it will continue to provide stream, at decided time (21s), it will stop the stream by changing its value.
 scoreStart = 0 # When scoring will start, value will change to 1.
 pause = 0 # When pause = 0, video will continue to run, when pause = 1 , video will be paused
 now = datetime.datetime.now()
 while start == 0:
     next = datetime.datetime.now()
+    print('Next1',next)
     timedif = (next - now).seconds
     # Process Key (ESC: end)
     key = cv.waitKey(10)
     if key == 27:  # ESC
         break
 
-    #Pausing functionality
-    if key == ord('p'):
-        pause = 1
-    elif key == ord('r'):
-        pause = 0
+    # Camera capture
+    ret, image = cap.read()
+    if not ret:
+        break
+    
+    image = cv.flip(image, 1)  # Mirror display
+    debug_image = copy.deepcopy(image)
 
-    if pause == 0:
-        # Camera capture
-        ret, image = cap.read()
-        if not ret:
-            break
-        image = cv.flip(image, 1)  # Mirror display
-        debug_image = copy.deepcopy(image)
+    # Detection implementation
+    image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
 
-        # Detection implementation
-        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+    image.flags.writeable = False
+    results = face_mesh.process(image)
+    image.flags.writeable = True
 
-        image.flags.writeable = False
-        results = face_mesh.process(image)
-        image.flags.writeable = True
+    if results.multi_face_landmarks is not None:
+        for face_landmarks in results.multi_face_landmarks:
+            # Bounding box calculation
+            brect = calc_bounding_rect(debug_image, face_landmarks)
 
-        if results.multi_face_landmarks is not None:
-            for face_landmarks in results.multi_face_landmarks:
-                # Bounding box calculation
-                brect = calc_bounding_rect(debug_image, face_landmarks)
+            # Landmark calculation
+            if focusModel == True:
+                focus_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
+                # Conversion to relative coordinates / normalized coordinates
+                pre_processed_landmark_list1 = pre_process_landmark(
+                focus_landmark_list)
+                facial_focus_id = keypoint_classifier(pre_processed_landmark_list1)
 
-                # Landmark calculation
-                if focusModel == True:
-                    focus_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI)
-                    # Conversion to relative coordinates / normalized coordinates
-                    pre_processed_landmark_list1 = pre_process_landmark(
-                    focus_landmark_list)
-                    facial_focus_id = keypoint_classifier(pre_processed_landmark_list1)
+            if emotionModel == True:
+                emotion_landmark_list = calc_landmark_list(debug_image, face_landmarks)
+                # Conversion to relative coordinates / normalized coordinates
+                pre_processed_landmark_list2 = pre_process_landmark(
+                emotion_landmark_list)
+                facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list2)
 
-                if emotionModel == True:
-                    emotion_landmark_list = calc_landmark_list(debug_image, face_landmarks)
-                    # Conversion to relative coordinates / normalized coordinates
-                    pre_processed_landmark_list2 = pre_process_landmark(
-                    emotion_landmark_list)
-                    facial_emotion_id = keypoint_classifier2(pre_processed_landmark_list2)
+            if HeadModel == True:
+                head_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI2)
+                # Conversion to relative coordinates / normalized coordinates
+                pre_processed_landmark_list3 = pre_process_landmark(
+                head_landmark_list)
+                head_id = keypoint_classifier3(pre_processed_landmark_list3)
 
-                if HeadModel == True:
-                    head_landmark_list = calc_landmark_list(debug_image, face_landmarks,ROI2)
-                    # Conversion to relative coordinates / normalized coordinates
-                    pre_processed_landmark_list3 = pre_process_landmark(
-                    head_landmark_list)
-                    head_id = keypoint_classifier3(pre_processed_landmark_list3)
-  
-            # Drawing part
-            try:
-                debug_image = draw_bounding_rect(use_brect, debug_image, brect)
-                debug_image = draw_info_text(
-                                    debug_image,
-                                    keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labels3[head_id]
-                                    )
-            # Scoring part
-                eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
-                emotionVal = keypoint_classifier_labels2[facial_emotion_id]
-                headVal = keypoint_classifier_labels3[head_id]
-                df = score(eyeFocusVal,emotionVal,headVal,df)
-            except:
-                pass
-        
-        else:
-            # Scoring part
+        # Drawing part
+        # try:
+        debug_image = draw_bounding_rect(use_brect, debug_image, brect)
+        debug_image = draw_info_text(
+                            debug_image,
+                            keypoint_classifier_labels[facial_focus_id],keypoint_classifier_labels2[facial_emotion_id],keypoint_classifier_labels3[head_id]
+                            )
+        # Scoring part
+        if timedif >= 10:
+            eyeFocusVal = keypoint_classifier_labels[facial_focus_id]
+            emotionVal = keypoint_classifier_labels2[facial_emotion_id]
+            headVal = keypoint_classifier_labels3[head_id]
+            df = score(eyeFocusVal,emotionVal,headVal,next,df)
+        elif timedif < 10:
+            cv.rectangle(debug_image, (0, 600), (1920,700),
+                (0,255,0), -1)
+            cv.putText(debug_image, f"VIDEO WILL START IN {10 - int(timedif)}", (300,675),
+            cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv.LINE_AA)
+        # except:
+        #     pass
+    
+    else:
+        # Scoring part
+        if timedif >= 10:
             eyeFocusVal = 'Not Focused'
             emotionVal = 'Negative'
             headVal = 'Not Center'
-            print('cant read')
             df = score(eyeFocusVal,emotionVal,headVal,df)
-    else:
-        # Scoring part
-        eyeFocusVal = 'Not Focused'
-        emotionVal = 'Negative'
-        headVal = 'Not Center'
-        print('cant read')
-        df = score(eyeFocusVal,emotionVal,headVal,df)
+        cv.rectangle(debug_image, (0, 0), (1920,100),
+                 (0, 0,255), -1)
+        cv.putText(debug_image, "CANNOT DETECT FACE", (300,75),
+                cv.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv.LINE_AA)
 
-
+    if timedif >= 10:
+        ret2,image2 = cap2.read()
+        if not ret2:
+            start = 1
+        elif ret2:
+            print('Next2',datetime.datetime.now())
+            cv.imshow('Video', image2)  
     # Screen reflection
     cv.imshow('Facial Emotion and focus Recognition', debug_image)
+    # if timedif >= 10 and ret2:
+        
 df.to_csv(filepath,index=False)
 df2 = secondScore(df)
 df2.to_csv(filepath2,index=False)
