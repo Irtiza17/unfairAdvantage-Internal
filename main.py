@@ -11,6 +11,9 @@ from scoring import score,secondScore, videoMapping
 import datetime
 import subprocess
 import sys
+from PIL import Image,ImageGrab
+
+bounding_box = (0,0,800,800)
 
 
 camera = "cam"
@@ -283,9 +286,11 @@ def main():
         if timedif > total_video_dur:
             start = 1
         # Camera capture
-        ret, image = cap.read()
-        if not ret:
-            break
+        img = ImageGrab.grab(bbox=bounding_box) #bbox specifies specific region (bbox= x,y,width,height)
+        image = np.array(img)
+        # ret, image = cap.read()
+        # if not ret:
+        #     break
         
         image = cv.flip(image, 1)  # Mirror display
         debug_image = copy.deepcopy(image)
