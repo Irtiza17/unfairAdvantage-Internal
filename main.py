@@ -13,15 +13,16 @@ import subprocess
 import sys
 from PIL import Image,ImageGrab
 
-bounding_box = (0,0,800,800)
 
 
-camera = "cam"
-total_video_dur = 21
+
+camera = "othercam" #Camera Values can be "cam","othercam","video","oakD", depending on income stream source.
+total_video_dur = 210
 show_live = True
-video_display = True
+video_display = False
 video_file_name = "demovideo.mp4"
 camera_to_use = 0
+bounding_box = (0,0,800,800)
 
 def main():
 
@@ -29,8 +30,7 @@ def main():
     focusModel = True
     emotionModel = True
 
-    #Camera Values can be "cam","video","oakD" depending on income stream source.
-
+    
 
     model_path ='model/keypoint_classifier/keypoint_classifier.tflite' # Focus Model Path 
     model_path2 ='model/keypoint_classifier/keypoint_classifier2.tflite' # Emotion Model Path
@@ -265,7 +265,7 @@ def main():
         systemOS = get_OS_platform()
 
         if systemOS == "Windows":
-            child_process = subprocess.Popen(["C:/Program Files/VideoLAN/VLC/vlc.exe","videos/" + video_file_name])
+            child_process = subprocess.Popen(["C:/Program Files (x86)/VideoLAN/VLC/vlc.exe","videos/" + video_file_name])
             print("Windows")
         elif systemOS == "OS X":
             child_process = subprocess.Popen(["/Applications/VLC.app/contents/MacOS/vlc", "videos/" + video_file_name])
@@ -286,17 +286,20 @@ def main():
         if timedif > total_video_dur:
             start = 1
         # Camera capture
-        img = ImageGrab.grab(bbox=bounding_box) #bbox specifies specific region (bbox= x,y,width,height)
-        image = np.array(img)
-        # ret, image = cap.read()
-        # if not ret:
-        #     break
+        if camera == 'othercam':
+            img = ImageGrab.grab(bbox=bounding_box) #bbox specifies specific region (bbox= x,y,width,height)
+            image = np.array(img)
+            image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+        elif camera == 'cam':
+            ret, image = cap.read()
+            if not ret:
+                break
         
         image = cv.flip(image, 1)  # Mirror display
         debug_image = copy.deepcopy(image)
 
         # Detection implementation
-        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+        # image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
 
         image.flags.writeable = False
         results = face_mesh.process(image)
