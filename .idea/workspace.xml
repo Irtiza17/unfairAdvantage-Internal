@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fe138a49-7ee7-455a-beee-e738fb577184" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/csv-plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/csv-plugin.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scorelog/PerSecondData.csv" beforeDir="false" afterPath="$PROJECT_DIR$/scorelog/PerSecondData.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scorelog/Report.csv" beforeDir="false" afterPath="$PROJECT_DIR$/scorelog/Report.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scorelog/SingleFrameData.csv" beforeDir="false" afterPath="$PROJECT_DIR$/scorelog/SingleFrameData.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +95,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666973610301</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="- Renamed files">
+      <created>1666978143607</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1666978143607</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -107,17 +119,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="- Added check for os platform to do appropriate VLC video play back&#10;- Moved camera selection to the top params&#10;- When the program ends, newly created child process is also now terminated" />
     <MESSAGE value="- Added check for os platform to do appropriate VLC video play back&#10;- Moved camera selection to the top params&#10;- When the program ends, newly created child process is also now terminated&#10;- Removed demovideo.mp4 of 21 seconds" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Added check for os platform to do appropriate VLC video play back&#10;- Moved camera selection to the top params&#10;- When the program ends, newly created child process is also now terminated&#10;- Removed demovideo.mp4 of 21 seconds" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>299</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="- Renamed files" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Renamed files" />
   </component>
 </project>

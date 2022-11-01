@@ -15,14 +15,22 @@ from PIL import Image,ImageGrab
 
 
 
+#Camera Values can be "cam","othercam","video","oakD", depending on income stream source.
+camera = "cam" #Webcam
+# camera = "othercam" #screen capture
+#---------------------------------------
 
-camera = "othercam" #Camera Values can be "cam","othercam","video","oakD", depending on income stream source.
-total_video_dur = 210
+total_video_dur = 21
 show_live = True
-video_display = False
+video_display = True
 video_file_name = "demovideo.mp4"
-camera_to_use = 0
-bounding_box = (0,0,800,800)
+
+# in camera to use 0 is builtin webcam, 1 is external webcam
+camera_to_use = 0   # Builin Web cam
+# camera_to_use = 1   # External webcam
+
+
+bounding_box = (0,0,900,900)
 
 def main():
 
