@@ -16,7 +16,7 @@ class KeyPointClassifier(object):
         self.interpreter.allocate_tensors()
         self.input_details = self.interpreter.get_input_details()
         self.output_details = self.interpreter.get_output_details()
-        self.last_index = 2
+        self.last_index = 1
 
     def __call__(
         self,
