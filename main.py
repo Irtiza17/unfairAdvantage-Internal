@@ -318,6 +318,8 @@ def main():
         
         image = cv.flip(image, 1)  # Mirror display
         debug_image = copy.deepcopy(image)
+        image_width2, image_height2 = image.shape[1], image.shape[0] # for Detections use
+        tab = int(((image_width2-290)/2)+290) # for Detection use
 
         # Detection implementation
         image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
@@ -358,14 +360,15 @@ def main():
                 debug_image = draw_info_text(
                                 debug_image,
                                 focus_labels[facial_focus_id],emotion_labels[facial_emotion_id],head_labels[head_id])
-                cv.rectangle(debug_image, (290, 0), (785,200),(0,255,0), -1)
+                # image_width2, image_height2
+                cv.rectangle(debug_image, (290, 0), (tab,200),(0,255,0), -1)
                 cv.putText(debug_image, "FACE DETECTED", (350,100),cv.FONT_HERSHEY_SIMPLEX, 1.5, (255, 255, 255), 2, cv.LINE_AA)                
         else:
             eyeFocusVal = 'Not Focused'
             emotionVal = 'Negative'
             headVal = 'Not Center'
             df = score(eyeFocusVal,emotionVal,headVal,next,df)
-            cv.rectangle(debug_image, (290, 0), (785,200),(0,0,255), -1)
+            cv.rectangle(debug_image, (290, 0), (tab,200),(0,0,255), -1)
             cv.putText(debug_image, "CANNOT DETECT FACE", (350,100),
                     cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv.LINE_AA)
 
@@ -382,17 +385,17 @@ def main():
                                 debug_image,
                                 focus_labels[facial_focus_id],emotion_labels[facial_emotion_id],head_labels[head_id],pointing_labels[pointing_id]
                                 )
-                    cv.rectangle(debug_image, (786, 0), (1280,200),(0,255,0), -1)
-                    cv.putText(debug_image, "HANDS DETECTED", (850,100),
+                    cv.rectangle(debug_image, (tab+1, 0), (image_width2,200),(0,255,0), -1)
+                    cv.putText(debug_image, "HANDS DETECTED", (tab+60,100),
                     cv.FONT_HERSHEY_SIMPLEX, 1.5, (255, 255, 255), 2, cv.LINE_AA)
         else:
             eyeFocusVal = 'Not Focused'
             emotionVal = 'Negative'
             headVal = 'Not Center'
             df = score(eyeFocusVal,emotionVal,headVal,next,df)
-            cv.rectangle(debug_image, (786, 0), (1280,200),
+            cv.rectangle(debug_image, (tab+1, 0), (image_width2,200),
                     (0, 0,255), -1)
-            cv.putText(debug_image, "CANNOT DETECT HANDS", (850,100),
+            cv.putText(debug_image, "CANNOT DETECT HANDS", (tab+60,100),
                     cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv.LINE_AA)
 
                 
