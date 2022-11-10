@@ -12,7 +12,7 @@ import datetime
 import subprocess
 import sys
 from PIL import Image,ImageGrab
-
+import time
 
 
 
@@ -151,7 +151,7 @@ def main():
 
 
     def draw_info_text(image, focus_text,emotion_text='',head_text='',pointing_text =''):
-        cv.rectangle(image, (0, 0), (290,200),
+        cv.rectangle(image, (0, 0), (290,230),
                     (0, 0, 0), -1)
 
         if focus_text != "":
@@ -293,11 +293,35 @@ def main():
             print("Mac OS")
         else: print("Other OS")
 
+    # used to record the time when we processed last frame
+    prev_frame_time = 0
+    
+    # used to record the time at which we processed current frame
+    new_frame_time = 0
     now = datetime.datetime.now()
 
 
     while start == 0:
         next = datetime.datetime.now()
+
+        new_frame_time = time.time()
+ 
+        # Calculating the fps
+ 
+        # fps will be number of frame processed in given time frame
+        # since their will be most of time error of 0.001 second
+        # we will be subtracting it to get more accurate result
+        fps = 1/(new_frame_time-prev_frame_time)
+        prev_frame_time = new_frame_time
+    
+        # converting the fps into integer
+        fps = int(fps)
+    
+        # converting the fps to string so that we can display it on frame
+        # by using putText function
+        fps = str(fps)
+
+
         # print('Next1',next)
         timedif = (next - now).seconds
         # Process Key (ESC: end)
@@ -319,7 +343,8 @@ def main():
         image = cv.flip(image, 1)  # Mirror display
         debug_image = copy.deepcopy(image)
         image_width2, image_height2 = image.shape[1], image.shape[0] # for Detections use
-        tab = int(((image_width2-290)/2)+290) # for Detection use
+        tab = int((((image_width2-290)/2)*0.5)+290) # for Detection use
+        tab2 = int((((image_width2-290)/2)*0.5)+tab) # for Detection use
 
         # Detection implementation
         image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
@@ -361,16 +386,16 @@ def main():
                                 debug_image,
                                 focus_labels[facial_focus_id],emotion_labels[facial_emotion_id],head_labels[head_id])
                 # image_width2, image_height2
-                cv.rectangle(debug_image, (290, 0), (tab,200),(0,255,0), -1)
-                cv.putText(debug_image, "FACE DETECTED", (350,100),cv.FONT_HERSHEY_SIMPLEX, 1.5, (255, 255, 255), 2, cv.LINE_AA)                
+                cv.rectangle(debug_image, (290, 0), (tab,30),(0,255,0), -1)
+                cv.putText(debug_image, "FACE DETECTED", (310,23),cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)                
         else:
             eyeFocusVal = 'Not Focused'
             emotionVal = 'Negative'
             headVal = 'Not Center'
             df = score(eyeFocusVal,emotionVal,headVal,next,df)
-            cv.rectangle(debug_image, (290, 0), (tab,200),(0,0,255), -1)
-            cv.putText(debug_image, "CANNOT DETECT FACE", (350,100),
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv.LINE_AA)
+            cv.rectangle(debug_image, (290, 0), (tab,30),(0,0,255), -1)
+            cv.putText(debug_image, "CANNOT DETECT FACE", (310,23),
+                    cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
 
         if hand_results.multi_hand_landmarks is not None:
             for hand_landmarks in hand_results.multi_hand_landmarks:
@@ -385,18 +410,18 @@ def main():
                                 debug_image,
                                 focus_labels[facial_focus_id],emotion_labels[facial_emotion_id],head_labels[head_id],pointing_labels[pointing_id]
                                 )
-                    cv.rectangle(debug_image, (tab+1, 0), (image_width2,200),(0,255,0), -1)
-                    cv.putText(debug_image, "HANDS DETECTED", (tab+60,100),
-                    cv.FONT_HERSHEY_SIMPLEX, 1.5, (255, 255, 255), 2, cv.LINE_AA)
+                    cv.rectangle(debug_image, (tab+1, 0), (tab2,30),(0,255,0), -1)
+                    cv.putText(debug_image, "HANDS DETECTED", (tab+20,23),
+                    cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
         else:
             eyeFocusVal = 'Not Focused'
             emotionVal = 'Negative'
             headVal = 'Not Center'
             df = score(eyeFocusVal,emotionVal,headVal,next,df)
-            cv.rectangle(debug_image, (tab+1, 0), (image_width2,200),
+            cv.rectangle(debug_image, (tab+1, 0), (int(tab2),30),
                     (0, 0,255), -1)
-            cv.putText(debug_image, "CANNOT DETECT HANDS", (tab+60,100),
-                    cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv.LINE_AA)
+            cv.putText(debug_image, "CANNOT DETECT HANDS", (tab+20,23),
+                    cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
 
                 
 
@@ -411,6 +436,7 @@ def main():
             emotionVal = emotion_labels[facial_emotion_id]
             headVal = head_labels[head_id]
             df = score(eyeFocusVal,emotionVal,headVal,next,df)
+            cv.putText(debug_image, f"FPS: {fps}", (5,220),cv.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 1, cv.LINE_AA)
         except Exception as e:
             print("the error is :", e)
             
