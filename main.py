@@ -21,7 +21,7 @@ total_video_dur = 210
 show_live = True
 video_display = False
 video_file_name = "demovideo.mp4"
-camera_to_use = 1
+camera_to_use = 0
 bounding_box = (0,0,800,800)
 
 def main():
@@ -387,7 +387,7 @@ def main():
                                 focus_labels[facial_focus_id],emotion_labels[facial_emotion_id],head_labels[head_id])
                 # image_width2, image_height2
                 cv.rectangle(debug_image, (290, 0), (tab,30),(0,255,0), -1)
-                cv.putText(debug_image, "FACE DETECTED", (310,23),cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)                
+                cv.putText(debug_image, "FACE DETECTED", (310,23),cv.FONT_HERSHEY_SIMPLEX, 0.6, (50, 50, 50), 1, cv.LINE_AA)
         else:
             eyeFocusVal = 'Not Focused'
             emotionVal = 'Negative'
@@ -412,7 +412,7 @@ def main():
                                 )
                     cv.rectangle(debug_image, (tab+1, 0), (tab2,30),(0,255,0), -1)
                     cv.putText(debug_image, "HANDS DETECTED", (tab+20,23),
-                    cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv.LINE_AA)
+                    cv.FONT_HERSHEY_SIMPLEX, 0.6, (50, 50, 50), 1, cv.LINE_AA)
         else:
             eyeFocusVal = 'Not Focused'
             emotionVal = 'Negative'
