@@ -18,11 +18,11 @@ import math
 
 
 camera = "cam" #Camera Values can be "cam","othercam","video","oakD", depending on income stream source.
-total_video_dur = 210
+total_video_dur = 2100
 show_live = True
 video_display = False
 video_file_name = "demovideo.mp4"
-camera_to_use = 0
+camera_to_use = 1
 bounding_box = (0,0,800,800)
 
 
@@ -286,6 +286,7 @@ def main():
         cam_rgb.preview.link(xout_rgb.input)
         return pipeline
 
+
     def length(a,b):
         x1 = a[0] 
         y1 = a[1] 
@@ -293,11 +294,13 @@ def main():
         y2 = b[1]
         return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
+
     def coordinatesCalc(landmarks, index):
         point = landmarks.landmark[index]
         x = int(point.x * image_width)
         y = int(point.y * image_height)
         return (x,y)
+
 
     def hi5Detection(landmarks, image):
         indexFingerTip = coordinatesCalc(landmarks, 8)
@@ -578,13 +581,13 @@ def main():
                 diff_left_elbow = length(start_left_elbow, next_left_elbow)
 
                 # Checking condition of movement
-                if diff_right_wrist > 17:
+                if diff_right_wrist > 17 and next_right_wrist[1]/image_height< 0.98:
                     moveVal_0 = 'moving'
                 else:
                     moveVal_0 = 'not moving'
                 start_right_wrist = next_right_wrist
 
-                if diff_left_wrist > 17:
+                if diff_left_wrist > 17 and next_left_wrist[1]/image_height< 0.98:
                     moveVal_1 = 'moving'
                 else:
                     moveVal_1 = 'not moving'
