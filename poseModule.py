@@ -3,6 +3,7 @@ from globalFuncs import *
 
 class poseDetector():
     def __init__(self,
+                movementModel = True,
                staticMode=False,
                modelComplexity=1,
                smoothLandmarks = True,
@@ -10,8 +11,7 @@ class poseDetector():
                smoothSegmentation=True,
                minDetectionConfidence=0.7,
                minTrackingConfidence=0.8,
-               draw = True,
-               movementModel = True):
+               draw = True):
 
         self.label0 = 'moving'
         self.label1 = 'not moving'

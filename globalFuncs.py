@@ -29,24 +29,26 @@ silhouette= [
 
 ROI2 =  silhouette + noseTip + noseBottom + noseRightCorner + noseLeftCorner + rightCheek + leftCheek
 
-def camSetup(camera = 0):
-    if camera == 0 or camera == 1:
-        cap_device = camera
-    elif camera == 'video':
+def camSetup(inputSource,sourcePath=0):
+    if inputSource == 'cam':
+        cap_device = sourcePath
+    elif inputSource == 'video':
         cap_device = 'D:/Internship/Tasks/Training/Moving hand while focus/handwhilefocus (10).mp4'
     cap_width = 1920
     cap_height = 1080    
     cap = cv.VideoCapture(cap_device)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
-    previous_frame = datetime.datetime.now()
-    return cap,previous_frame
+    startTime = datetime.datetime.now()
+    frameTime = datetime.datetime.now()
+    return cap,startTime,frameTime
 
-def imgManip(img):
+def imgManip(img,inputSource):
+    if inputSource == 'video':
+        img= rescaleFrame(img, scale=2)
     debug_img = copy.deepcopy(cv.flip(img,1))
     img = cv.flip(img, 1)  # Mirror display
     img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
-
     return img,debug_img
 
 def get_OS_platform():
@@ -89,8 +91,7 @@ def draw_bounding_rect(image, brect,use_brect=True):
 
         return image
 
-def videoDisplayFunc(video_display = True):
-    video_file_name = "demovideo.mp4"
+def videoDisplayFunc(video_file_name,video_display = True):
     if video_display:
         systemOS = get_OS_platform()
         if systemOS == "Windows":
@@ -274,3 +275,26 @@ def hi5Detection(landmarks, image):
                     cv.putText(image, 'Hi5', (25,70),
                     cv.FONT_HERSHEY_SIMPLEX, 0.8, (0,0,0), 1, cv.LINE_AA)
                     return True
+
+def outputDisplay(show,img,title):
+    if show:
+        cv.imshow(f'{title}', img)
+    else:
+        pass
+
+def programTimingFunction(pre_time,vidDuration):
+    cur_time = datetime.datetime.now()   
+    timediff = (cur_time - pre_time).seconds
+    if timediff <= vidDuration:
+        start = True
+    else:
+        start = False
+    return start
+
+def rescaleFrame(frame, scale=1.8):
+    # Images, Videos and Live Video
+    width = int(frame.shape[1] * scale)
+    height = int(frame.shape[0] * scale)
+
+    dimensions = (width,height)
+    return cv.resize(frame, dimensions, interpolation=cv.INTER_AREA)

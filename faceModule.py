@@ -8,22 +8,20 @@ show_live = True
 
 class faceDetector():
     def __init__(self,
-               staticMode=False,
-               maxFaces=1,
-               refineLandmarks=True,
-               minDetectionConfidence=0.5,
-               minTrackingConfidence=0.5,
-               headModel = True,
-               focusModel = True,
+                focusModel = True,
                emotionModel = True,
-               pointingModel = True,
-               draw = False):
+               headModel = True,
+               staticMode = False,
+               maxFaces = 1,
+               refineLandmarks=True,
+               minDetectionConfidence = 0.5,
+               minTrackingConfidence = 0.5,
+               draw = True):
                
 
         self.focusModel = focusModel
         self.emotionModel = emotionModel
         self.headModel = headModel
-        self.pointingModel = pointingModel
         self.draw = draw
 
         #Models Load

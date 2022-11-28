@@ -5,14 +5,14 @@ from model import KeyPointClassifier
 
 class handDetector():
     def __init__(self,
+                pointingModel = True,
+                wavingModel = True,
                staticMode=False,
                maxHands=2,
                modelComplexity=1,
                minDetectionConfidence=0.5,
                minTrackingConfidence=0.4,
-               draw = True,
-               pointingModel = True,
-               wavingModel = True):
+               draw = True):
 
         self.draw = draw
         self.pointingModel = pointingModel
@@ -29,7 +29,6 @@ class handDetector():
         pointingLabelPath = 'pointing_labels.csv'
         self.pointingClassifier = KeyPointClassifier(pointingModelPath)
         self.pointing_labels = labelReader(pointingLabelPath)
-
 
     def pointingModelProcess(self):        
         hands_landmark_list = calc_landmark_list(self.debug_img, self.hand_landmarks,"Hands")

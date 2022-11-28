@@ -5,7 +5,7 @@ import numpy as np
 timelist = []
 
 
-class Scoring():
+class report():
 
     def __init__(self):
         self.filepath = 'scorelog/SingleFrameData.csv'  #csv file for score data of every frame.
@@ -13,7 +13,7 @@ class Scoring():
         self.filepath3 = 'scorelog/Report.csv' # csv file for videos information and score mapping against videos.
         self.df = pd.DataFrame(columns=['Date','Time','Focus','Emotion','Head','Pointing','Waving','Hand Movement'])
 
-    def singleFrameDate(self,s1,s2,s3,s4,s5,s6,timeVal):
+    def singleFrameData(self,s1,s2,s3,s4,s5,s6,timeVal):
     
         # Calculating score based on Focus, Emotion and Head Values
         if str(s1).lower() == "focused":

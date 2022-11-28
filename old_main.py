@@ -7,7 +7,7 @@ import cv2 as cv
 import numpy as np
 import mediapipe as mp
 from model import KeyPointClassifier
-from scoring import score,secondScore, videoMapping
+from report import score,secondScore, videoMapping
 import datetime
 import subprocess
 import sys
