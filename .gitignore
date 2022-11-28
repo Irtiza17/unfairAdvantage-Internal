@@ -134,3 +134,6 @@ prac.py
 demoVideos/
 training.ipynb
 scoring.ipynb
+pose/
+Training/
+logs/
