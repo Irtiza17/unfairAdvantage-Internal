@@ -33,7 +33,7 @@ def camSetup(inputSource,sourcePath=0):
     if inputSource == 'cam':
         cap_device = sourcePath
     elif inputSource == 'video':
-        cap_device = 'D:/Internship/Tasks/Training/Moving hand while focus/handwhilefocus (10).mp4'
+        cap_device = sourcePath
     cap_width = 1920
     cap_height = 1080    
     cap = cv.VideoCapture(cap_device)
