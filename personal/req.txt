@@ -1,0 +1,2 @@
+vgg_face_weights.h5 580 MB
+deepface small one
