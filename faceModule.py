@@ -1,6 +1,7 @@
 import mediapipe as mp
 from globalFuncs import * 
 from model import KeyPointClassifier
+from deepface import DeepFace
 
 
 total_video_dur = 210
@@ -31,20 +32,16 @@ class faceDetector():
 
         # Models and labels Path
         focusModelPath = 'model/keypoint_classifier/keypoint_classifier.tflite'
-        emotionModelPath = 'model/keypoint_classifier/keypoint_classifier2.tflite'
         headModelPath = 'model/keypoint_classifier/keypoint_classifier3.tflite'
         focuslabelPath = 'focus_labels.csv'
-        emotionlabelPath = 'emotion_labels.csv'
         headlabelPath = 'head_labels.csv'
 
         #Classifiers initialization
         self.focusClassifier = KeyPointClassifier(focusModelPath)
-        self.emotionClassifier = KeyPointClassifier(emotionModelPath)
         self.headClassifier = KeyPointClassifier(headModelPath)
 
         #Labels List
         self.focus_labels = labelReader(focuslabelPath)
-        self.emotion_labels = labelReader(emotionlabelPath)
         self.head_labels = labelReader(headlabelPath)
     
     def focusModelProcess(self):        
@@ -54,11 +51,13 @@ class faceDetector():
         focusVal = self.focus_labels[focus_id]
         return focusVal
 
-    def emotionModelProcess(self):        
-        emotion_landmark_list = calc_landmark_list(self.debug_img, self.face_landmarks,"Emotion")
-        emotion_processed_landmarks = pre_process_landmark(emotion_landmark_list)
-        emotion_id = self.emotionClassifier(emotion_processed_landmarks)
-        emotionVal = self.emotion_labels[emotion_id]
+    def emotionModelProcess(self):
+        try:        
+            analyze = DeepFace.analyze(self.debug_img,actions=['emotion'])
+            emotionVal = analyze['dominant_emotion']
+        except:
+            emotionVal = 'N/A'
+
         return emotionVal
 
     def headModelProcess(self):        

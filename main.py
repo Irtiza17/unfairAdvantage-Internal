@@ -13,20 +13,20 @@ wavingModel = True
 movementModel = True
 
 # Cam source parameters
-inputSource = "video" #inputSource Values can be "cam","video", depending on income stream source.
-# sourcePath = 0 # If inputsource is cam, sourcePath can be 0 or 1, if its video , then sourcePath is a videopath.
-sourcePath = 'D:/Internship/Tasks/Training/Moving hand while focus/handwhilefocus (10).mp4'
+inputSource = "cam" #inputSource Values can be "cam","video", depending on income stream source.
+sourcePath = 0 # If inputsource is cam, sourcePath can be 0 or 1, if its video , then sourcePath is a videopath.
+# sourcePath = 'D:/Internship/Tasks/Training/Moving hand while focus/handwhilefocus (10).mp4'
 show_live = True
 
 # Stimulant content video 
 total_video_dur = 210
-video_display = True
+video_display = False
 video_file_name = "demovideo.mp4"
 
 
 def main():
     handmodel = handDetector(pointingModel,wavingModel)
-    facemodel = faceDetector(focusModel,emotionModel,HeadModel)
+    facemodel = faceDetector(focusModel,emotionModel,HeadModel,draw=False)
     posemodel = poseDetector(movementModel)
     scoring = report()
     
