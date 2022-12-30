@@ -3,6 +3,8 @@ from handModule import handDetector
 from faceModule import faceDetector
 from poseModule import poseDetector
 from report import report
+from threading import Thread
+import sys
 
 # Models to run
 focusModel = True
@@ -13,29 +15,32 @@ wavingModel = True
 movementModel = True
 
 # Cam source parameters
-inputSource = "video" #inputSource Values can be "cam","video", depending on income stream source.
-# sourcePath = 0 # If inputsource is cam, sourcePath can be 0 or 1, if its video , then sourcePath is a videopath.
-sourcePath = 'D:/Internship/Tasks/Training/Moving hand while focus/handwhilefocus (10).mp4'
-show_live = True
+inputSource = "cam" #inputSource Values can be "cam","video", depending on income stream source.
+sourcePath = 0 # If inputsource is cam, sourcePath can be 0 or 1, if its video , then sourcePath is a videopath.
+# sourcePath = 'videos/video6.mp4'
+show_live = False
 
 # Stimulant content video 
-total_video_dur = 210
-video_display = True
-video_file_name = "demovideo.mp4"
+total_video_dur = 10
+# video_display = True
+# video_file_name = "demovideo.mp4"
+
+
+handmodel = handDetector(pointingModel,wavingModel)
+facemodel = faceDetector(focusModel,emotionModel,HeadModel,draw=False)
+posemodel = poseDetector(movementModel)
+scoring = report()
+cap,dimensions= camSetup(inputSource,sourcePath)
 
 
 def main():
-    handmodel = handDetector(pointingModel,wavingModel)
-    facemodel = faceDetector(focusModel,emotionModel,HeadModel)
-    posemodel = poseDetector(movementModel)
-    scoring = report()
-    
-    
+    startTime,frame_time = startTimeFunc()
+    # videoProcess = Thread(target = videoDisplayFunc, args = (video_file_name,video_display))
+    # videoProcess.daemon = True
+    # videoProcess.start()
 
-    cap,startTime,frame_time= camSetup(inputSource,sourcePath)
+    # videoProcess = videoDisplayFunc(video_file_name,video_display)
     start = True
-    videoProcess = videoDisplayFunc(video_file_name,video_display)
-    
     while start:
 
         start = programTimingFunction(startTime,total_video_dur)
@@ -43,14 +48,17 @@ def main():
         # Reading frame 
         ret, image = cap.read()
         key = cv.waitKey(10)
+        
         if key == 27:  # ESC
-            break
+            cap.release()
+            cv.destroyAllWindows()
+            raise Exception("Assessment Interrupted")
 
         # FPS calculation
         FPS,frame_time = fps(frame_time)
 
         # Performing necessary image manipulation
-        image,display_img = imgManip(image,inputSource)
+        image,display_img = imgManip(image,inputSource,dimensions)
 
         # Face Readings from face model
         display_image,focusVal,emotionVal,headVal  = facemodel.classPredictor(image,display_img)
@@ -71,10 +79,12 @@ def main():
         outputDisplay(show_live,display_image,'Facial Emotion and focus Recognition')
 
     # Close playback video 
-    videoProcess.terminate() if videoProcess != None else print('No video played')
+    # videoProcess.terminate() if videoProcess != None else print('No video played')
+    cap.release()
+    cv.destroyAllWindows()
 
     # Final Report generation
     scoring.reportGeneration()
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

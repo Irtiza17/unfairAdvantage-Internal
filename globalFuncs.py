@@ -29,6 +29,8 @@ silhouette= [
 
 ROI2 =  silhouette + noseTip + noseBottom + noseRightCorner + noseLeftCorner + rightCheek + leftCheek
 
+
+
 def camSetup(inputSource,sourcePath=0):
     if inputSource == 'cam':
         cap_device = sourcePath
@@ -39,13 +41,17 @@ def camSetup(inputSource,sourcePath=0):
     cap = cv.VideoCapture(cap_device)
     cap.set(cv.CAP_PROP_FRAME_WIDTH, cap_width)
     cap.set(cv.CAP_PROP_FRAME_HEIGHT, cap_height)
+    dimensions = (int(cap.get(cv.CAP_PROP_FRAME_WIDTH)),int(cap.get(cv.CAP_PROP_FRAME_HEIGHT)))
+    return cap,dimensions
+
+def startTimeFunc():
     startTime = datetime.datetime.now()
     frameTime = datetime.datetime.now()
-    return cap,startTime,frameTime
+    return startTime,frameTime
 
-def imgManip(img,inputSource):
+def imgManip(img,inputSource,dimensions):
     if inputSource == 'video':
-        img= rescaleFrame(img, scale=2)
+        img= rescaleFrame(img, dimensions)
     debug_img = copy.deepcopy(cv.flip(img,1))
     img = cv.flip(img, 1)  # Mirror display
     img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
@@ -96,7 +102,7 @@ def videoDisplayFunc(video_file_name,video_display = True):
         systemOS = get_OS_platform()
         if systemOS == "Windows":
             child_process = subprocess.Popen(["C:/Program Files (x86)/VideoLAN/VLC/vlc.exe","videos/" + video_file_name])
-            print("Windows")
+            print("Windows",type(child_process))
         elif systemOS == "OS X":
             child_process = subprocess.Popen(["/Applications/VLC.app/contents/MacOS/vlc", "videos/" + video_file_name])
             print("Mac OS")
@@ -278,7 +284,7 @@ def hi5Detection(landmarks, image):
 
 def outputDisplay(show,img,title):
     if show:
-        cv.imshow(f'{title}', img)
+        cv.imshow(title,img)
     else:
         pass
 
@@ -291,10 +297,23 @@ def programTimingFunction(pre_time,vidDuration):
         start = False
     return start
 
-def rescaleFrame(frame, scale=1.8):
+def rescaleFrame2(frame, scale=1.8):
     # Images, Videos and Live Video
     width = int(frame.shape[1] * scale)
     height = int(frame.shape[0] * scale)
+
+    dimensions = (width,height)
+    return cv.resize(frame, dimensions, interpolation=cv.INTER_AREA)
+
+def rescaleFrame(frame,dims):
+    #600 , 480 
+    #1280,720
+
+    scale_x = 1920/dims[0]
+    scale_y = 810/dims[1]
+    # Images, Videos and Live Video
+    width = int(frame.shape[1] * scale_x)
+    height = int(frame.shape[0] * scale_y)
 
     dimensions = (width,height)
     return cv.resize(frame, dimensions, interpolation=cv.INTER_AREA)

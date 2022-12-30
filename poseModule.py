@@ -55,6 +55,8 @@ class poseDetector():
             moveVal_0 = self.label0
         else:
             moveVal_0 = self.label1
+        # print(f'start: {self.start_right_wrist}')
+        # print(f'next: {next_right_wrist}')
         self.start_right_wrist = next_right_wrist
 
         if diff_left_wrist > 17 and next_left_wrist[1]/image_height< 0.98:
