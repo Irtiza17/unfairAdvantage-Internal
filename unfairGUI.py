@@ -7,6 +7,7 @@ import main
 import smtplib
 from email.message import EmailMessage
 from globalFuncs import *
+from threading import Thread
 
 
 video_file_name = "demovideo.mp4"
@@ -24,7 +25,7 @@ class unfairGUI:
         self.root.title('Screen 1')
         self.root.geometry('1280x756')
         self.root.config()
-        self.screen4()
+        self.screen3()
 
     def screen1(self): 
 
@@ -40,40 +41,76 @@ class unfairGUI:
         btn_arabic = Button(self.root,image=self.btnArabicImage, bd=0, highlightthickness = 0,relief='groove',cursor='hand2')
         btn_arabic.place(x=950,y=175)
 
+    def click(self,event,placeholder):
+        if event.get() == placeholder:
+            event.config(state=NORMAL)
+            event.delete(0, 'end')
+
+    def leave(self,event,placeholder):
+        # event.delete(0, 'end')
+        if event.get() == "":
+            event.insert(0, f'{placeholder}')
+            event.config(state=DISABLED)
+            self.root.focus()
+
     def screen2(self):
 
         self.root.title('Screen 2')
         #Form Frame
         self.bgScreen2 = ImageTk.PhotoImage(file = 'images/bg/pg2.png')
         scrn2Label = Label(self.root,image=self.bgScreen2).place(x=0,y=0)
-        frame1 = Frame(self.root,width=812,height=402)
-        frame1.place(x=402,y=184)
+        # frame1 = Frame(self.root,width=812,height=402)
+        # frame1.place(x=402,y=184)
         # frame1.place(relx=20,rely=20,width=812,height=402)
 
         #Field1
-        self.txt_mname = Entry(frame1,font=('calibri',24),bg='gray')
-        self.txt_mname.place(x=0,y=0,width=812,height=72)
+        self.txt_mname = Entry(self.root,font=('calibri',24),bg='white',bd=0)
+        self.txt_mname.insert(0, 'Mother Name')
+        self.txt_mname.config(state=DISABLED)
+        self.txt_mname.bind("<Button-1>", lambda e : self.click(self.txt_mname,'Mother Name'))
+        self.txt_mname.bind("<Leave>", lambda e : self.leave(self.txt_mname,'Mother Name'))
+        self.txt_mname.place(x=412,y=188,width=790,height=65)
         
 
         #Field 2
-        self.txt_cname = Entry(frame1,font=('calibri',24),bg='blue')
-        self.txt_cname.place(x=0,y=82,width=812,height=72)
+        self.txt_cname = Entry(self.root,font=('calibri',24),bg='white',bd=0)
+        self.txt_cname.insert(0, "Child's Name")
+        self.txt_cname.config(state=DISABLED)
+        self.txt_cname.bind("<Button-1>", lambda e : self.click(self.txt_cname,"Child's Name"))
+        self.txt_cname.bind("<Leave>", lambda e : self.leave(self.txt_cname,"Child's Name"))
+        self.txt_cname.place(x=412,y=(188+82),width=790,height=65)
 
         #Field 3
-        self.txt_cage = Entry(frame1,font=('calibri',24),bg='blue')
-        self.txt_cage.place(x=0,y=164,width=400,height=72)
+        self.txt_cage = Entry(self.root,font=('calibri',24),bg='white',bd=0)
+        self.txt_cage.insert(0, "Child's Age")
+        self.txt_cage.config(state=DISABLED)
+        self.txt_cage.bind("<Button-1>", lambda e : self.click(self.txt_cage,"Child's Age"))
+        self.txt_cage.bind("<Leave>", lambda e : self.leave(self.txt_cage,"Child's Age"))
+        self.txt_cage.place(x=412,y=(188+164),width=380,height=65)
 
         #Field 4
-        self.txt_cgender = Entry(frame1,font=('calibri',24),bg='blue')
-        self.txt_cgender.place(x=410,y=164,width=400,height=72)
+        self.txt_cgender = Entry(self.root,font=('calibri',24),bg='white',bd=0)
+        self.txt_cgender.insert(0, "Child's Gender")
+        self.txt_cgender.config(state=DISABLED)
+        self.txt_cgender.bind("<Button-1>", lambda e : self.click(self.txt_cgender,"Child's Gender"))
+        self.txt_cgender.bind("<Leave>", lambda e : self.leave(self.txt_cgender,"Child's Gender"))
+        self.txt_cgender.place(x=822,y=(188+164),width=380,height=65)
 
         #Field 5
-        self.txt_email = Entry(frame1,font=('calibri',24),bg='blue')
-        self.txt_email.place(x=0,y=246,width=812,height=72)
+        self.txt_email = Entry(self.root,font=('calibri',24),bg='white',bd=0)
+        self.txt_email.insert(0, "Email")
+        self.txt_email.config(state=DISABLED)
+        self.txt_email.bind("<Button-1>", lambda e : self.click(self.txt_email,"Email"))
+        self.txt_email.bind("<Leave>", lambda e : self.leave(self.txt_email,"Email"))
+        self.txt_email.place(x=412,y=(188+246),width=790,height=65)
 
-        #Field 6
-        self.txt_mob = Entry(frame1,font=('calibri',24),bg='blue')
-        self.txt_mob.place(x=0,y=328,width=812,height=72)
+        #Field 6c
+        self.txt_mob = Entry(self.root,font=('calibri',24),bg='white',bd=0)
+        self.txt_mob.insert(0, "Mobile Number")
+        self.txt_mob.config(state=DISABLED)
+        self.txt_mob.bind("<Button-1>", lambda e : self.click(self.txt_mob,"Mobile Number"))
+        self.txt_mob.bind("<Leave>", lambda e : self.leave(self.txt_mob,"Mobile Number"))
+        self.txt_mob.place(x=412,y=(188+328),width=790,height=65)
 
         # Next Button
         self.btn1_image = PhotoImage(file = "images/buttons/next.png")
@@ -118,12 +155,7 @@ class unfairGUI:
         ##Update the interface
             self.root.update()
             time.sleep(1)
-
-        ## Let the user know if timer has expired
-        # if(clockTime == 0):
-        #     messagebox.showinfo("","Your time has expired!")
-            clockTime -=1
-        
+            clockTime -=1 
 
     def screen4(self): 
 
@@ -144,7 +176,7 @@ class unfairGUI:
         btn_reset.place(x=1132,y=650)
         self.countdownTimer(self.sec)
         # self.scrn4Label.after(0,self.assessmentStart)
-        # self.assessmentStart()
+        self.assessmentStart()
 
     def emailFunc(self):
         cur2=self.con.cursor()
@@ -269,12 +301,26 @@ class unfairGUI:
             filepath = f'videos/{self.videofile}'
             vidplayer.load(filepath)
             vidplayer.play()
-
+            self.root.mainloop()
+            vidplayer.destroy()
+            
     def assessmentStart(self):
         try:
+            # self.videoPlayer()
+            # thread = Thread(target = self.videoPlayer)
+            # thread.start()
+            # thread.join()
             videoProcess = videoDisplayFunc(self.videofile,self.displayVideo)
             # self.videoPlayer()
-            main.main()
+            score, intelligence = main.main()
+            cur=self.con.cursor()
+            cur.execute("insert into form_data (Score,Intelligence_Type) values(%s,%s)",
+                                (score,
+                                intelligence
+                                ))
+            self.con.commit()
+            self.con.close()
+
             videoProcess.terminate() if videoProcess != None else print('No video played')
             self.screen5()
 
@@ -292,7 +338,7 @@ class unfairGUI:
 
     def register_data(self):
         
-        if self.txt_mname.get() == "" or self.txt_cname.get() == "" or self.txt_cage.get() == "" or self.txt_cgender.get() == "" or self.txt_email.get() == "" or self.txt_mob.get() == "":
+        if self.txt_mname.get() == "Mother Name" or self.txt_cname.get() == "Child's Name" or self.txt_cage.get() == "Child's Age" or self.txt_cgender.get() == "Child's Gender" or self.txt_email.get() == "Email" or self.txt_mob.get() == "Mobile Number":
             messagebox.showerror("Error","All fields are required",parent =self.root)
         else:
             try:

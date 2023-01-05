@@ -18,10 +18,10 @@ movementModel = True
 inputSource = "cam" #inputSource Values can be "cam","video", depending on income stream source.
 sourcePath = 0 # If inputsource is cam, sourcePath can be 0 or 1, if its video , then sourcePath is a videopath.
 # sourcePath = 'videos/video6.mp4'
-show_live = False
+show_live = True
 
 # Stimulant content video 
-total_video_dur = 10
+total_video_dur = 15
 # video_display = True
 # video_file_name = "demovideo.mp4"
 
@@ -84,7 +84,9 @@ def main():
     cv.destroyAllWindows()
 
     # Final Report generation
-    scoring.reportGeneration()
+    results = scoring.reportGeneration()
+
+    return results
 
 # if __name__ == "__main__":
 #     main()

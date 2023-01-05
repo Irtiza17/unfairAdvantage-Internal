@@ -111,5 +111,12 @@ class report():
         outputdf['Waving'] = Waving.values()
         outputdf['Hand Movement'] = Moving.values()
         outputdf['Total Score'] = Total.values()
+        maxval = outputdf['Total Score'].max()
+        index = outputdf['Total Score'].idxmax()
+        intelligence = outputdf.at[index,'Intelligence Tag']
+
+        print('Max score is on :',index,maxval,intelligence)
 
         outputdf.to_csv(self.filepath3,index=False)
+
+        return (maxval,intelligence)

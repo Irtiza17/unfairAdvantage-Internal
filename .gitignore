@@ -137,3 +137,5 @@ scoring.ipynb
 pose/
 Training/
 logs/
+videoplayer.py
+timer.py

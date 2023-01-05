@@ -1,4 +1,4 @@
 Video Name,Intelligence Tag,Duration,Focus,Emotion,Head,Pointing,Waving,Hand Movement,Total Score
-Video1,Interpersonal,0:00:07,3,0,3,0,0,0,6
-Video2,Logical,0:00:07,3,0,3,0,0,0,6
-Video3,Naturalistic,0:00:07,3,0,3,0,0,0,6
+Video1,Interpersonal,0:00:07,3,2,5,0,0,1,11
+Video2,Logical,0:00:07,5,0,5,0,5,5,20
+Video3,Naturalistic,0:00:07,4,1,4,0,0,1,10
